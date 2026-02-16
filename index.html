@@ -399,6 +399,7 @@
   ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
 
   @keyframes glow { 0%,100% { box-shadow: 0 0 5px rgba(0,245,255,0.2); } 50% { box-shadow: 0 0 20px rgba(0,245,255,0.4); } }
+  @keyframes certBorderAnim { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 </style>
 </head>
 <body>
@@ -1164,11 +1165,75 @@
   </div>
 </div>
 
+<!-- ===== SLIDE 18: Graduation & Certificate ===== -->
+<div class="slide" id="s18">
+  <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+  <div style="text-align:center;margin-bottom:24px;">
+    <h2 style="margin:0;font-size:24px;">Congratulations!</h2>
+    <p style="color:var(--text-dim);margin:8px 0 0;">You've completed the Git Interactive Masterclass.</p>
+  </div>
+
+  <div id="certNamePrompt" style="text-align:center;margin-bottom:20px;">
+    <label style="font-size:14px;color:var(--text-dim);">Enter your name for the certificate:</label>
+    <input type="text" id="certNameInput" placeholder="Your Name" autocomplete="off" style="display:block;margin:8px auto 0;padding:8px 16px;font-size:18px;text-align:center;background:#111;border:1px solid #444;border-radius:6px;color:var(--gold);font-family:inherit;width:280px;outline:none;" oninput="updateCertName()">
+  </div>
+
+  <div id="certWrapper" style="perspective:800px;display:flex;justify-content:center;">
+    <div id="certCard" style="position:relative;width:580px;max-width:95vw;border-radius:16px;padding:3px;background:linear-gradient(135deg,var(--cyan),var(--gold),var(--purple),var(--ember),var(--cyan));background-size:400% 400%;animation:certBorderAnim 6s ease infinite;transition:transform 0.15s ease-out;transform-style:preserve-3d;">
+
+      <!-- Holographic shimmer overlay -->
+      <div id="certShimmer" style="position:absolute;top:0;left:0;right:0;bottom:0;border-radius:16px;background:radial-gradient(circle 200px at 50% 50%, rgba(255,255,255,0.06), transparent);pointer-events:none;z-index:2;transition:background 0.15s ease-out;"></div>
+
+      <div style="position:relative;z-index:1;background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:36px 32px;text-align:center;">
+
+        <!-- Top decorative line -->
+        <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:20px;">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--cyan));"></div>
+          <div style="font-size:11px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;">Git Interactive Masterclass</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);"></div>
+        </div>
+
+        <div style="font-size:28px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:6px;">Certificate of Completion</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:24px;">This certifies that</div>
+
+        <div id="certDisplayName" style="font-size:32px;font-weight:700;color:var(--cyan);min-height:44px;margin-bottom:4px;letter-spacing:0.5px;text-shadow:0 0 20px rgba(0,245,255,0.3);">&#8212;</div>
+
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:24px;">has completed the Git Interactive Masterclass<br>and demonstrated understanding of Git version control</div>
+
+        <!-- Score boxes -->
+        <div style="display:flex;gap:16px;justify-content:center;margin-bottom:24px;">
+          <div style="background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);border-radius:10px;padding:14px 20px;min-width:140px;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px;">Speed Round</div>
+            <div style="font-size:24px;font-weight:700;color:var(--cyan);" id="certSpeedScore">-</div>
+          </div>
+          <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:14px 20px;min-width:140px;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px;">Final Assessment</div>
+            <div style="font-size:24px;font-weight:700;color:var(--gold);" id="certFinalScore">-</div>
+          </div>
+        </div>
+
+        <!-- Bottom decorative line + date -->
+        <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px;">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,#333);"></div>
+          <div style="font-size:11px;letter-spacing:2px;color:var(--text-dim);" id="certDate"></div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#333,transparent);"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;">
+    <button class="cmd-btn" onclick="downloadCert()" style="padding:10px 24px;font-size:14px;color:var(--gold);border-color:var(--gold);">Download Certificate</button>
+  </div>
+</div>
+
 </div><!-- end slide-container -->
 
 <script>
 // === State ===
-const TOTAL = 18;
+const TOTAL = 19;
 let cur = 0, visited = new Set([0]), score = 0;
 
 // === Navigation ===
@@ -1197,6 +1262,7 @@ function goTo(n) {
   document.getElementById('nextBtn').disabled = n === TOTAL - 1;
   document.getElementById('progressFill').style.width = (n / (TOTAL - 1) * 100) + '%';
   document.getElementById('slideContainer').scrollTop = 0;
+  if (n === 18) initCertSlide();
 }
 
 function navigate(dir) { goTo(cur + dir); }
@@ -2492,6 +2558,224 @@ function fqCheck(id, btn, correct) {
     else if (fqCorrect >= 4) document.getElementById('fqMsg').textContent = 'Solid understanding. Review the ones you missed.';
     else document.getElementById('fqMsg').textContent = 'Worth going through some sections again.';
   }
+}
+
+// === Slide 18: Graduation & Certificate ===
+var confettiParts = [];
+var confettiAnimId = null;
+
+function fireConfetti() {
+  var canvas = document.getElementById('confettiCanvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var ctx = canvas.getContext('2d');
+  var colors = ['#00f5ff','#ffd700','#ff6b35','#b388ff','#7eb8a0','#ff3b5c','#fff'];
+  confettiParts = [];
+  for (var i = 0; i < 180; i++) {
+    confettiParts.push({
+      x: canvas.width * 0.5 + (Math.random() - 0.5) * canvas.width * 0.4,
+      y: canvas.height * 0.4,
+      vx: (Math.random() - 0.5) * 16,
+      vy: -Math.random() * 18 - 4,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 6 + 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * Math.PI * 2,
+      rv: (Math.random() - 0.5) * 0.3,
+      alpha: 1
+    });
+  }
+  if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+  animateConfetti(ctx, canvas);
+}
+
+function animateConfetti(ctx, canvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  var alive = 0;
+  for (var i = 0; i < confettiParts.length; i++) {
+    var p = confettiParts[i];
+    p.vy += 0.35;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vx *= 0.99;
+    p.rot += p.rv;
+    if (p.y > canvas.height + 20) { p.alpha -= 0.05; }
+    if (p.alpha <= 0) continue;
+    alive++;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.alpha);
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    ctx.restore();
+  }
+  if (alive > 0) {
+    confettiAnimId = requestAnimationFrame(function() { animateConfetti(ctx, canvas); });
+  }
+}
+
+function initCertSlide() {
+  // Set scores
+  document.getElementById('certSpeedScore').textContent = speedCorrect + ' / ' + SPEED_COUNT;
+  document.getElementById('certFinalScore').textContent = fqCorrect + ' / 6';
+  // Set date
+  var d = new Date();
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('certDate').textContent = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  // Fire confetti
+  setTimeout(fireConfetti, 300);
+}
+
+function updateCertName() {
+  var name = document.getElementById('certNameInput').value.trim();
+  document.getElementById('certDisplayName').textContent = name || '\u2014';
+}
+
+// 3D tilt + shimmer on mouse move
+document.addEventListener('mousemove', function(e) {
+  var card = document.getElementById('certCard');
+  if (!card || card.closest('.slide').style.display === 'none') return;
+  var rect = card.getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top + rect.height / 2;
+  var dx = (e.clientX - cx) / (rect.width / 2);
+  var dy = (e.clientY - cy) / (rect.height / 2);
+  var maxTilt = 8;
+  var rotY = dx * maxTilt;
+  var rotX = -dy * maxTilt;
+  card.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+  // Move shimmer
+  var shimmer = document.getElementById('certShimmer');
+  if (shimmer) {
+    var px = ((e.clientX - rect.left) / rect.width * 100);
+    var py = ((e.clientY - rect.top) / rect.height * 100);
+    shimmer.style.background = 'radial-gradient(circle 200px at ' + px + '% ' + py + '%, rgba(255,255,255,0.08), transparent)';
+  }
+});
+
+document.addEventListener('mouseleave', function() {
+  var card = document.getElementById('certCard');
+  if (card) card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+});
+
+function downloadCert() {
+  var name = document.getElementById('certNameInput').value.trim() || 'Graduate';
+  var W = 1200, H = 800;
+  var canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, W, H);
+
+  // Border gradient
+  var grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#00f5ff');
+  grad.addColorStop(0.25, '#ffd700');
+  grad.addColorStop(0.5, '#b388ff');
+  grad.addColorStop(0.75, '#ff6b35');
+  grad.addColorStop(1, '#00f5ff');
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.roundRect(16, 16, W - 32, H - 32, 20);
+  ctx.stroke();
+
+  // Inner subtle border
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(28, 28, W - 56, H - 56, 14);
+  ctx.stroke();
+
+  // Top decorative lines
+  ctx.strokeStyle = '#00f5ff';
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.4;
+  ctx.beginPath(); ctx.moveTo(100, 120); ctx.lineTo(440, 120); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(760, 120); ctx.lineTo(1100, 120); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // Header
+  ctx.fillStyle = '#00f5ff';
+  ctx.font = '600 13px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('GIT INTERACTIVE MASTERCLASS', W / 2, 126);
+
+  // Certificate of Completion
+  ctx.fillStyle = '#ffd700';
+  ctx.font = '700 42px system-ui, sans-serif';
+  ctx.fillText('Certificate of Completion', W / 2, 210);
+
+  // "This certifies that"
+  ctx.fillStyle = '#888';
+  ctx.font = '400 15px system-ui, sans-serif';
+  ctx.fillText('This certifies that', W / 2, 270);
+
+  // Name
+  ctx.fillStyle = '#00f5ff';
+  ctx.font = '700 46px system-ui, sans-serif';
+  ctx.shadowColor = 'rgba(0,245,255,0.3)';
+  ctx.shadowBlur = 20;
+  ctx.fillText(name, W / 2, 340);
+  ctx.shadowBlur = 0;
+
+  // Description
+  ctx.fillStyle = '#aaa';
+  ctx.font = '400 17px system-ui, sans-serif';
+  ctx.fillText('has completed the Git Interactive Masterclass', W / 2, 400);
+  ctx.fillText('and demonstrated understanding of Git version control', W / 2, 428);
+
+  // Score boxes
+  var boxW = 180, boxH = 90, boxY = 480, gap = 30;
+  // Speed round box
+  var bx1 = W / 2 - boxW - gap / 2;
+  ctx.fillStyle = 'rgba(0,245,255,0.06)';
+  ctx.strokeStyle = 'rgba(0,245,255,0.25)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(bx1, boxY, boxW, boxH, 10); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#666';
+  ctx.font = '600 11px system-ui, sans-serif';
+  ctx.fillText('SPEED ROUND', bx1 + boxW / 2, boxY + 30);
+  ctx.fillStyle = '#00f5ff';
+  ctx.font = '700 28px system-ui, sans-serif';
+  ctx.fillText(speedCorrect + ' / ' + SPEED_COUNT, bx1 + boxW / 2, boxY + 66);
+
+  // Final assessment box
+  var bx2 = W / 2 + gap / 2;
+  ctx.fillStyle = 'rgba(255,215,0,0.06)';
+  ctx.strokeStyle = 'rgba(255,215,0,0.25)';
+  ctx.beginPath(); ctx.roundRect(bx2, boxY, boxW, boxH, 10); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#666';
+  ctx.font = '600 11px system-ui, sans-serif';
+  ctx.fillText('FINAL ASSESSMENT', bx2 + boxW / 2, boxY + 30);
+  ctx.fillStyle = '#ffd700';
+  ctx.font = '700 28px system-ui, sans-serif';
+  ctx.fillText(fqCorrect + ' / 6', bx2 + boxW / 2, boxY + 66);
+
+  // Bottom line + date
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(200, 640); ctx.lineTo(1000, 640); ctx.stroke();
+  var d = new Date();
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  ctx.fillStyle = '#666';
+  ctx.font = '400 14px system-ui, sans-serif';
+  ctx.fillText(months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(), W / 2, 670);
+
+  // Bottom branding
+  ctx.fillStyle = '#444';
+  ctx.font = '400 12px system-ui, sans-serif';
+  ctx.fillText('mikedyan.github.io/git-masterclass', W / 2, 750);
+
+  // Download
+  var link = document.createElement('a');
+  link.download = 'Git-Masterclass-Certificate-' + name.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
 }
 
 // === Init ===
