@@ -1178,11 +1178,11 @@
   </div>
 
   <div class="quiz" id="fq-9">
-    <div class="quiz-q">Q9: What happens during a fast-forward merge?</div>
-    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">Git uses a faster algorithm to merge</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-9',this,true)">The branch pointer moves forward &mdash; no merge commit is created</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">Git skips the code review step</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">Conflicts are automatically resolved</button>
+    <div class="quiz-q">Q9: What does git rebase do differently from git merge?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">It deletes the other branch</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,true)">It replays your commits on top of another branch, creating a linear history</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">It combines branches without any possibility of conflicts</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">It creates a merge commit with two parents</button>
     <div class="quiz-fb" id="fq-9-fb"></div>
   </div>
 
@@ -2395,56 +2395,54 @@ function pipeStage(i) {
 
 // === Slide 16: Speed Round ===
 var speedPool = [
-  { q: 'Stage changes for commit?', opts: ['git stage', 'git add', 'git push', 'git save'], correct: 1,
-    explain: 'git add moves changes from your working directory into the staging area, preparing them for the next commit.' },
+  { q: 'Stage changes for the next commit?', opts: ['git stage', 'git add', 'git push', 'git save'], correct: 1,
+    explain: 'git add moves changes from your working directory into the staging area, preparing them for the next commit. (Section 2: The Three Areas)' },
   { q: 'Create a new branch?', opts: ['git new branch', 'git branch <name>', 'git create branch', 'git fork'], correct: 1,
-    explain: 'git branch <name> creates a new branch pointer at your current commit.' },
+    explain: 'git branch <name> creates a new branch pointer at your current commit. (Section 5: Branches)' },
   { q: 'View commit history?', opts: ['git history', 'git log', 'git show', 'git commits'], correct: 1,
-    explain: 'git log walks the commit chain from HEAD, showing hash, author, date, and message for each commit.' },
+    explain: 'git log walks the commit chain from HEAD, showing each commit\'s hash, author, date, and message. (Section 4: Terminal Sandbox)' },
   { q: 'Safely undo a commit on a shared branch?', opts: ['git reset', 'git revert', 'git undo', 'git rollback'], correct: 1,
-    explain: 'git revert creates a new commit that reverses the changes, keeping history intact. Safe for shared branches.' },
+    explain: 'git revert creates a new commit that reverses the changes, keeping history intact. Safe for shared branches. (Section 8: Reset vs Revert)' },
   { q: 'Save uncommitted work temporarily?', opts: ['git save', 'git stash', 'git hold', 'git park'], correct: 1,
-    explain: 'git stash saves your changes to a hidden stack and cleans your working directory. Restore them with git stash pop.' },
+    explain: 'git stash saves your changes to a hidden stack and cleans your working directory. Restore with git stash pop. (Section 10: Stash)' },
   { q: 'Download remote changes without merging?', opts: ['git pull', 'git fetch', 'git download', 'git sync'], correct: 1,
-    explain: 'git fetch downloads new commits from the remote but doesn\'t modify your working directory or current branch.' },
-  { q: 'Find which commit introduced a bug?', opts: ['git blame', 'git bisect', 'git find', 'git search'], correct: 1,
-    explain: 'git bisect does a binary search through commits. You mark each as good/bad and it narrows down to the culprit.' },
+    explain: 'git fetch downloads new commits from the remote but doesn\'t modify your working directory or branch. (Section 11: Remotes)' },
+  { q: 'Find which commit introduced a bug?', opts: ['git hunt', 'git bisect', 'git find', 'git search'], correct: 1,
+    explain: 'git bisect does a binary search through commits. You mark each as good/bad and it narrows down to the culprit. (Section 14: Git Bisect)' },
   { q: 'Combine two branches?', opts: ['git combine', 'git merge', 'git join', 'git connect'], correct: 1,
-    explain: 'git merge integrates changes from one branch into another, creating a merge commit if branches diverged.' },
+    explain: 'git merge integrates changes from one branch into another, creating a merge commit if branches diverged. (Section 6: Merging)' },
   { q: 'Copy a remote repo to your machine?', opts: ['git copy', 'git clone', 'git download', 'git fork'], correct: 1,
-    explain: 'git clone copies the entire repository with full history, all branches, and all tags to your local machine.' },
-  { q: 'See who last changed each line?', opts: ['git blame', 'git log', 'git show', 'git author'], correct: 0,
-    explain: 'git blame annotates each line of a file with the commit hash, author, and date of the most recent change.' },
-  { q: 'Switch to a different branch?', opts: ['git switch <branch>', 'git move <branch>', 'git go <branch>', 'git change <branch>'], correct: 0,
-    explain: 'git switch (or git checkout) moves HEAD to the specified branch and updates your working directory to match.' },
-  { q: 'View unstaged changes?', opts: ['git diff', 'git changes', 'git show', 'git status'], correct: 0,
-    explain: 'git diff shows line-by-line differences between your working directory and the staging area (unstaged changes).' },
+    explain: 'git clone copies the entire repository with full history, all branches, and all tags to your machine. (Section 11: Remotes)' },
   { q: 'Replay commits on top of another branch?', opts: ['git replay', 'git move', 'git rebase', 'git transplant'], correct: 2,
-    explain: 'git rebase takes your commits and replays them on top of another branch, creating a linear history.' },
-  { q: 'Delete a local branch?', opts: ['git branch -d <name>', 'git delete <name>', 'git remove <name>', 'git drop <name>'], correct: 0,
-    explain: 'git branch -d deletes the branch pointer. Use -D (capital) to force-delete a branch with unmerged changes.' },
-  { q: 'Push and set upstream tracking?', opts: ['git push --track', 'git push -u origin <branch>', 'git push --upstream', 'git push --set'], correct: 1,
-    explain: 'git push -u (or --set-upstream) pushes and links your local branch to the remote, so future push/pull just works.' },
+    explain: 'git rebase takes your commits and replays them on top of another branch, creating linear history. (Section 7: Rebase vs Merge)' },
   { q: 'See a summary of repo status?', opts: ['git info', 'git status', 'git check', 'git summary'], correct: 1,
-    explain: 'git status shows which files are staged, modified, or untracked — a quick overview of your working directory state.' },
+    explain: 'git status shows which files are staged, modified, or untracked. (Section 4: Terminal Sandbox)' },
   { q: 'Fetch + merge in one command?', opts: ['git sync', 'git pull', 'git update', 'git download'], correct: 1,
-    explain: 'git pull is shorthand for git fetch + git merge. It downloads remote changes and immediately integrates them.' },
+    explain: 'git pull = git fetch + git merge. Downloads remote changes and immediately integrates them. (Section 11: Remotes)' },
   { q: 'Clean up commits interactively before sharing?', opts: ['git rebase -i', 'git squash', 'git clean', 'git tidy'], correct: 0,
-    explain: 'git rebase -i (interactive) opens an editor where you can pick, squash, reword, or drop commits.' },
+    explain: 'git rebase -i (interactive) opens an editor where you can pick, squash, or drop commits. (Section 7: Interactive Rebase)' },
   { q: 'Create a commit from staged changes?', opts: ['git save', 'git commit', 'git push', 'git store'], correct: 1,
-    explain: 'git commit takes everything in the staging area and creates a new commit object with your message and metadata.' },
-  { q: 'Recover a "lost" commit after reset?', opts: ['git undo', 'git reflog', 'git recover', 'git restore'], correct: 1,
-    explain: 'git reflog shows every HEAD movement. Even after reset --hard, you can find the lost commit hash and restore it.' },
-  { q: 'Add a remote repository URL?', opts: ['git remote add <name> <url>', 'git add remote <url>', 'git url add <url>', 'git connect <url>'], correct: 0,
-    explain: 'git remote add creates a shortname (like "origin") mapped to a repository URL, stored in .git/config.' },
-  { q: 'Show details of a specific commit?', opts: ['git show <hash>', 'git detail <hash>', 'git view <hash>', 'git inspect <hash>'], correct: 0,
-    explain: 'git show displays the commit metadata (author, date, message) and the diff of changes introduced by that commit.' },
-  { q: 'Discard all uncommitted changes?', opts: ['git reset --hard', 'git clean', 'git undo all', 'git discard'], correct: 0,
-    explain: 'git reset --hard resets your working directory and staging area to match the last commit. Uncommitted work is lost.' },
-  { q: 'Create an annotated tag?', opts: ['git tag -a v1.0', 'git label v1.0', 'git mark v1.0', 'git tag --create v1.0'], correct: 0,
-    explain: 'git tag -a creates an annotated tag — a full git object with your name, date, and a message, pointing to a specific commit.' },
-  { q: 'Stage only part of a file\'s changes?', opts: ['git add -p', 'git add --part', 'git stage --lines', 'git add --select'], correct: 0,
-    explain: 'git add -p (patch mode) lets you interactively choose which hunks of changes within a file to stage.' }
+    explain: 'git commit takes everything in the staging area and creates a new commit object. (Section 4: Terminal Sandbox)' },
+  { q: 'Find a "lost" commit after accidental reset?', opts: ['git undo', 'git reflog', 'git recover', 'git restore'], correct: 1,
+    explain: 'git reflog shows every HEAD movement. Even after reset --hard, you can find lost commits. (Section 9: The Reflog)' },
+  { q: 'Discard all uncommitted changes permanently?', opts: ['git reset --hard', 'git clean', 'git undo all', 'git discard'], correct: 0,
+    explain: 'git reset --hard resets your working directory and staging area to match the last commit. (Section 8: Reset vs Revert)' },
+  { q: 'Initialize a new git repository?', opts: ['git start', 'git init', 'git create', 'git new'], correct: 1,
+    explain: 'git init creates a .git/ folder in your project, telling git to start tracking files here. (Section 4: Terminal Sandbox)' },
+  { q: 'Create a branch AND switch to it?', opts: ['git branch -s <name>', 'git checkout -b <name>', 'git switch --new <name>', 'git new <name>'], correct: 1,
+    explain: 'git checkout -b creates a new branch and immediately switches to it in one command. (Section 5: Branches)' },
+  { q: 'Switch to an existing branch?', opts: ['git checkout <branch>', 'git move <branch>', 'git go <branch>', 'git change <branch>'], correct: 0,
+    explain: 'git checkout <branch> moves HEAD to that branch and updates your working directory. (Section 5: Branches)' },
+  { q: 'Restore stashed work-in-progress?', opts: ['git stash restore', 'git stash pop', 'git stash get', 'git unstash'], correct: 1,
+    explain: 'git stash pop restores your saved changes and removes the stash entry. (Section 10: Stash)' },
+  { q: 'Upload local commits to GitHub?', opts: ['git upload', 'git push', 'git send', 'git sync'], correct: 1,
+    explain: 'git push uploads your local commits to the remote repository (like GitHub). (Section 11: Remotes)' },
+  { q: 'Undo a commit but keep changes staged?', opts: ['git reset --soft HEAD~1', 'git undo --keep', 'git revert --staged', 'git uncommit'], correct: 0,
+    explain: 'git reset --soft moves the branch pointer back but keeps your changes in the staging area. (Section 8: Reset vs Revert)' },
+  { q: 'Mark a commit as "good" during bug search?', opts: ['git bisect ok', 'git bisect good', 'git bisect pass', 'git bisect clean'], correct: 1,
+    explain: 'git bisect good tells bisect this commit does NOT have the bug, narrowing the search. (Section 14: Git Bisect)' },
+  { q: 'See all saved stashes?', opts: ['git stash show', 'git stash list', 'git stash all', 'git stash view'], correct: 1,
+    explain: 'git stash list shows all stashed entries in your stash stack. (Section 10: Stash)' }
 ];
 var SPEED_COUNT = 10;
 var SPEED_TIME = 15;
@@ -2586,7 +2584,7 @@ const fqFeedback = {
   'fq-6': { y: 'Blob (file content), tree (directory), commit (snapshot + metadata), and tag (named reference). Everything in git is one of these four.', n: 'The four types are: blob (file content), tree (directory listing), commit (snapshot + metadata), and tag (named reference to a commit).' },
   'fq-7': { y: 'The staging area lets you selectively prepare changes. You might have 5 modified files but only stage 2 for a focused commit.', n: 'The staging area is your commit drafting zone — it lets you pick exactly which changes go into the next commit, not all of them at once.' },
   'fq-8': { y: 'When someone else has pushed new commits, the remote is ahead of you. Pull first to get their changes, then push yours.', n: 'Push fails when the remote has commits you don\'t have yet. Download them first with git pull, then push.' },
-  'fq-9': { y: 'When there\'s nothing to merge (target branch has no new commits), git just moves the pointer forward. No merge commit needed.', n: 'A fast-forward happens when the target branch has no new commits since you branched off. Git just slides the pointer forward — no merge commit is created.' },
+  'fq-9': { y: 'Rebase replays your commits on top of the target branch, rewriting history into a clean straight line. Merge preserves the branch history with a merge commit.', n: 'Rebase replays your commits on top of another branch, creating linear history. Merge keeps the full branch history and creates a merge commit with two parents.' },
   'fq-10': { y: 'HEAD is a pointer to your current branch. It\'s a file (.git/HEAD) containing something like "ref: refs/heads/main".', n: 'HEAD is a pointer to whichever branch you currently have checked out. It\'s how git knows "where you are" in the commit history.' },
 };
 
@@ -2743,117 +2741,125 @@ document.addEventListener('mouseleave', certReset);
 
 function downloadCert() {
   var name = document.getElementById('certNameInput').value.trim() || 'Graduate';
-  var W = 1200, H = 800;
+  var S = 2; // 2x scale for crisp output
+  var W = 600 * S, H = 420 * S;
   var canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   var ctx = canvas.getContext('2d');
+  ctx.scale(S, S);
+  var w = 600, h = 420; // logical size
 
-  // Background
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, W, H);
+  // Background fill
+  ctx.fillStyle = '#0b0b12';
+  ctx.fillRect(0, 0, w, h);
 
-  // Border gradient
-  var grad = ctx.createLinearGradient(0, 0, W, H);
+  // Scanline pattern (matches HTML)
+  ctx.strokeStyle = 'rgba(255,255,255,0.01)';
+  ctx.lineWidth = 0.5;
+  for (var y = 0; y < h; y += 20) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+
+  // Gradient border
+  var grad = ctx.createLinearGradient(0, 0, w, h);
   grad.addColorStop(0, '#00f5ff');
   grad.addColorStop(0.25, '#ffd700');
   grad.addColorStop(0.5, '#b388ff');
   grad.addColorStop(0.75, '#ff6b35');
   grad.addColorStop(1, '#00f5ff');
   ctx.strokeStyle = grad;
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.roundRect(16, 16, W - 32, H - 32, 20);
-  ctx.stroke();
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.roundRect(4, 4, w - 8, h - 8, 14); ctx.stroke();
 
-  // Inner subtle border
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.roundRect(28, 28, W - 56, H - 56, 14);
-  ctx.stroke();
+  // Inner border
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.roundRect(10, 10, w - 20, h - 20, 11); ctx.stroke();
 
-  // Top decorative lines
-  ctx.strokeStyle = '#00f5ff';
-  ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.4;
-  ctx.beginPath(); ctx.moveTo(100, 120); ctx.lineTo(440, 120); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(760, 120); ctx.lineTo(1100, 120); ctx.stroke();
-  ctx.globalAlpha = 1;
-
-  // Header
-  ctx.fillStyle = '#00f5ff';
-  ctx.font = '600 13px system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.letterSpacing = '4px';
-  ctx.fillText('GIT INTERACTIVE MASTERCLASS', W / 2, 126);
 
-  // Certificate of Completion
+  // Top decorative lines + header (y=48)
+  ctx.strokeStyle = 'rgba(0,245,255,0.4)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(50, 48); ctx.lineTo(220, 48); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(380, 48); ctx.lineTo(550, 48); ctx.stroke();
+
+  ctx.fillStyle = 'rgba(0,245,255,0.8)';
+  ctx.font = '600 10px system-ui, -apple-system, sans-serif';
+  ctx.fillText('GIT  INTERACTIVE  MASTERCLASS', w / 2, 52);
+
+  // Certificate of Completion (y=88)
   ctx.fillStyle = '#ffd700';
-  ctx.font = '700 42px system-ui, sans-serif';
-  ctx.fillText('Certificate of Completion', W / 2, 210);
-
-  // "This certifies that"
-  ctx.fillStyle = '#888';
-  ctx.font = '400 15px system-ui, sans-serif';
-  ctx.fillText('This certifies that', W / 2, 270);
-
-  // Name
-  ctx.fillStyle = '#00f5ff';
-  ctx.font = '700 46px system-ui, sans-serif';
-  ctx.shadowColor = 'rgba(0,245,255,0.3)';
-  ctx.shadowBlur = 20;
-  ctx.fillText(name, W / 2, 340);
+  ctx.font = '700 30px system-ui, -apple-system, sans-serif';
+  ctx.shadowColor = 'rgba(255,215,0,0.2)';
+  ctx.shadowBlur = 15;
+  ctx.fillText('Certificate of Completion', w / 2, 92);
   ctx.shadowBlur = 0;
 
-  // Description
-  ctx.fillStyle = '#aaa';
-  ctx.font = '400 17px system-ui, sans-serif';
-  ctx.fillText('has completed the Git Interactive Masterclass', W / 2, 400);
-  ctx.fillText('and demonstrated understanding of Git version control', W / 2, 428);
+  // "This certifies that" (y=116)
+  ctx.fillStyle = '#555';
+  ctx.font = '400 11px system-ui, -apple-system, sans-serif';
+  ctx.fillText('THIS CERTIFIES THAT', w / 2, 118);
 
-  // Score boxes
-  var boxW = 180, boxH = 90, boxY = 480, gap = 30;
-  // Speed round box
-  var bx1 = W / 2 - boxW - gap / 2;
-  ctx.fillStyle = 'rgba(0,245,255,0.06)';
-  ctx.strokeStyle = 'rgba(0,245,255,0.25)';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.roundRect(bx1, boxY, boxW, boxH, 10); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#666';
-  ctx.font = '600 11px system-ui, sans-serif';
-  ctx.fillText('SPEED ROUND', bx1 + boxW / 2, boxY + 30);
+  // Name (y=152)
   ctx.fillStyle = '#00f5ff';
-  ctx.font = '700 28px system-ui, sans-serif';
-  ctx.fillText(speedCorrect + ' / ' + SPEED_COUNT, bx1 + boxW / 2, boxY + 66);
+  ctx.font = '700 34px system-ui, -apple-system, sans-serif';
+  ctx.shadowColor = 'rgba(0,245,255,0.25)';
+  ctx.shadowBlur = 20;
+  ctx.fillText(name, w / 2, 156);
+  ctx.shadowBlur = 0;
 
-  // Final assessment box
-  var bx2 = W / 2 + gap / 2;
-  ctx.fillStyle = 'rgba(255,215,0,0.06)';
-  ctx.strokeStyle = 'rgba(255,215,0,0.25)';
-  ctx.beginPath(); ctx.roundRect(bx2, boxY, boxW, boxH, 10); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#666';
-  ctx.font = '600 11px system-ui, sans-serif';
-  ctx.fillText('FINAL ASSESSMENT', bx2 + boxW / 2, boxY + 30);
-  ctx.fillStyle = '#ffd700';
-  ctx.font = '700 28px system-ui, sans-serif';
-  ctx.fillText(fqCorrect + ' / ' + FQ_TOTAL, bx2 + boxW / 2, boxY + 66);
+  // Description (y=180, y=196)
+  ctx.fillStyle = '#888';
+  ctx.font = '400 13px system-ui, -apple-system, sans-serif';
+  ctx.fillText('has completed the Git Interactive Masterclass', w / 2, 184);
+  ctx.fillText('and demonstrated understanding of Git version control', w / 2, 202);
 
-  // Bottom line + date
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  // Score boxes (y=230)
+  var boxW = 150, boxH = 70, boxY = 230, gap = 20;
+  var bx1 = w / 2 - boxW - gap / 2;
+  var bx2 = w / 2 + gap / 2;
+
+  // Commands box
+  ctx.fillStyle = 'rgba(0,245,255,0.04)';
+  ctx.strokeStyle = 'rgba(0,245,255,0.15)';
   ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(200, 640); ctx.lineTo(1000, 640); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(bx1, boxY, boxW, boxH, 8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#555';
+  ctx.font = '600 9px system-ui, -apple-system, sans-serif';
+  ctx.fillText('COMMANDS', bx1 + boxW / 2, boxY + 24);
+  ctx.fillStyle = '#00f5ff';
+  ctx.font = '700 24px system-ui, -apple-system, sans-serif';
+  ctx.fillText(speedCorrect + ' / ' + SPEED_COUNT, bx1 + boxW / 2, boxY + 54);
+
+  // Knowledge box
+  ctx.fillStyle = 'rgba(255,215,0,0.04)';
+  ctx.strokeStyle = 'rgba(255,215,0,0.15)';
+  ctx.beginPath(); ctx.roundRect(bx2, boxY, boxW, boxH, 8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#555';
+  ctx.font = '600 9px system-ui, -apple-system, sans-serif';
+  ctx.fillText('KNOWLEDGE', bx2 + boxW / 2, boxY + 24);
+  ctx.fillStyle = '#ffd700';
+  ctx.font = '700 24px system-ui, -apple-system, sans-serif';
+  ctx.fillText(fqCorrect + ' / ' + FQ_TOTAL, bx2 + boxW / 2, boxY + 54);
+
+  // Bottom line + date (y=340)
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(100, 340); ctx.lineTo(500, 340); ctx.stroke();
+
   var d = new Date();
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  ctx.fillStyle = '#666';
-  ctx.font = '400 14px system-ui, sans-serif';
-  ctx.fillText(months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(), W / 2, 670);
+  ctx.fillStyle = '#555';
+  ctx.font = '400 11px system-ui, -apple-system, sans-serif';
+  ctx.fillText(months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(), w / 2, 358);
 
   // Bottom branding
-  ctx.fillStyle = '#444';
-  ctx.font = '400 12px system-ui, sans-serif';
-  ctx.fillText('mikedyan.github.io/git-masterclass', W / 2, 750);
+  ctx.fillStyle = '#333';
+  ctx.font = '400 10px system-ui, -apple-system, sans-serif';
+  ctx.fillText('mikedyan.github.io/git-masterclass', w / 2, 395);
 
-  // Download
+  // Download at 2x resolution
   var link = document.createElement('a');
   link.download = 'Git-Masterclass-Certificate-' + name.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
   link.href = canvas.toDataURL('image/png');
