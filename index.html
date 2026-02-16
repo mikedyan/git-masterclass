@@ -1080,8 +1080,8 @@
 
 <!-- ===== SLIDE 16: Speed Round ===== -->
 <div class="slide" id="s16">
-  <h2>16. Speed Round</h2>
-  <p>Test your knowledge under pressure. <strong>15 seconds per question. 10 random questions.</strong> Questions are shuffled each time you play.</p>
+  <h2>16. Command Speed Round</h2>
+  <p>Name the right git command. <strong>15 seconds per question. 10 random questions.</strong> Shuffled each time you play.</p>
 
   <div id="speedQuizArea">
     <div style="text-align:center;margin:20px 0;">
@@ -1102,8 +1102,8 @@
 
 <!-- ===== SLIDE 17: Final Assessment ===== -->
 <div class="slide" id="s17">
-  <h2>17. Final Assessment</h2>
-  <p>Let's see how deeply this landed. No peeking!</p>
+  <h2>17. Knowledge Assessment</h2>
+  <p>10 questions testing your understanding of how git works under the hood. Take your time.</p>
 
   <div class="quiz" id="fq-1">
     <div class="quiz-q">Q1: What does git store in each commit?</div>
@@ -1117,7 +1117,7 @@
   <div class="quiz" id="fq-2">
     <div class="quiz-q">Q2: What is a git branch, physically?</div>
     <button class="quiz-opt" onclick="fqCheck('fq-2',this,false)">A copy of all files in a folder</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-2',this,true)">A small text file with a commit hash</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-2',this,true)">A small text file containing a commit hash</button>
     <button class="quiz-opt" onclick="fqCheck('fq-2',this,false)">A compressed project snapshot</button>
     <button class="quiz-opt" onclick="fqCheck('fq-2',this,false)">A special commit type</button>
     <div class="quiz-fb" id="fq-2-fb"></div>
@@ -1136,27 +1136,63 @@
     <div class="quiz-q">Q4: You accidentally ran git reset --hard. How can you recover?</div>
     <button class="quiz-opt" onclick="fqCheck('fq-4',this,false)">You cannot &mdash; the commits are gone forever</button>
     <button class="quiz-opt" onclick="fqCheck('fq-4',this,false)">Re-clone from GitHub</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-4',this,true)">Use git reflog to find the lost commit hash, then git reset --hard to that hash</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-4',this,true)">Use git reflog to find the lost commit hash, then reset to that hash</button>
     <button class="quiz-opt" onclick="fqCheck('fq-4',this,false)">Run git undo</button>
     <div class="quiz-fb" id="fq-4-fb"></div>
   </div>
 
   <div class="quiz" id="fq-5">
-    <div class="quiz-q">Q5: What does git stash do?</div>
-    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">Permanently deletes uncommitted changes</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">Creates a new branch with your changes</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-5',this,true)">Saves uncommitted changes to a hidden stack so you can switch branches safely</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">Commits your changes with a temporary message</button>
+    <div class="quiz-q">Q5: What makes a merge commit different from a regular commit?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">It's larger because it contains more files</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,true)">It has two parent commits instead of one</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">It can't be reverted</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">It requires approval from a reviewer</button>
     <div class="quiz-fb" id="fq-5-fb"></div>
   </div>
 
   <div class="quiz" id="fq-6">
-    <div class="quiz-q">Q6: Why does git push sometimes fail?</div>
-    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">Internet is too slow</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-6',this,true)">The remote has commits you don't have &mdash; pull first</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">Files are too large</button>
-    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">You forgot git add</button>
+    <div class="quiz-q">Q6: What are the four object types in git's internal database?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">file, folder, commit, branch</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,true)">blob, tree, commit, tag</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">add, commit, push, pull</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">source, build, test, deploy</button>
     <div class="quiz-fb" id="fq-6-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-7">
+    <div class="quiz-q">Q7: What is the staging area for?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-7',this,false)">Storing backups of your files</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-7',this,true)">Choosing exactly which changes go in the next commit</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-7',this,false)">Running tests before you push</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-7',this,false)">Resolving merge conflicts</button>
+    <div class="quiz-fb" id="fq-7-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-8">
+    <div class="quiz-q">Q8: Why does git push sometimes fail?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-8',this,false)">Internet is too slow</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-8',this,true)">The remote has commits you don't have &mdash; pull first</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-8',this,false)">Files are too large</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-8',this,false)">You forgot git add</button>
+    <div class="quiz-fb" id="fq-8-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-9">
+    <div class="quiz-q">Q9: What happens during a fast-forward merge?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">Git uses a faster algorithm to merge</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,true)">The branch pointer moves forward &mdash; no merge commit is created</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">Git skips the code review step</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-9',this,false)">Conflicts are automatically resolved</button>
+    <div class="quiz-fb" id="fq-9-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-10">
+    <div class="quiz-q">Q10: What is HEAD?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-10',this,false)">The latest commit on main</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-10',this,false)">The first commit in the repo</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-10',this,true)">A pointer to whichever branch you currently have checked out</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-10',this,false)">The remote server URL</button>
+    <div class="quiz-fb" id="fq-10-fb"></div>
   </div>
 
   <div id="fqResult" style="display:none;margin-top:20px;padding:20px;background:var(--bg2);border-radius:12px;border:1px solid var(--border);text-align:center;">
@@ -2342,56 +2378,56 @@ function pipeStage(i) {
 
 // === Slide 16: Speed Round ===
 var speedPool = [
-  { q: 'Move a file to the staging area?', opts: ['git add', 'git push', 'git stage', 'git move'], correct: 0,
-    explain: 'git add moves changes from your working directory into the staging area, preparing them to be included in the next commit.' },
+  { q: 'Stage changes for commit?', opts: ['git stage', 'git add', 'git push', 'git save'], correct: 1,
+    explain: 'git add moves changes from your working directory into the staging area, preparing them for the next commit.' },
   { q: 'Create a new branch?', opts: ['git new branch', 'git branch <name>', 'git create branch', 'git fork'], correct: 1,
-    explain: 'git branch <name> creates a new branch pointer at your current commit. It\'s just a 41-byte file containing a commit hash.' },
-  { q: 'See commit history?', opts: ['git history', 'git show', 'git log', 'git commits'], correct: 2,
-    explain: 'git log walks the commit chain starting from HEAD, showing each commit\'s hash, author, date, and message.' },
-  { q: 'Undo a commit safely on a shared branch?', opts: ['git reset', 'git undo', 'git delete', 'git revert'], correct: 3,
-    explain: 'git revert creates a NEW commit that undoes the changes. Unlike reset, it doesn\'t rewrite history, so it\'s safe for branches others are using.' },
+    explain: 'git branch <name> creates a new branch pointer at your current commit.' },
+  { q: 'View commit history?', opts: ['git history', 'git log', 'git show', 'git commits'], correct: 1,
+    explain: 'git log walks the commit chain from HEAD, showing hash, author, date, and message for each commit.' },
+  { q: 'Safely undo a commit on a shared branch?', opts: ['git reset', 'git revert', 'git undo', 'git rollback'], correct: 1,
+    explain: 'git revert creates a new commit that reverses the changes, keeping history intact. Safe for shared branches.' },
   { q: 'Save uncommitted work temporarily?', opts: ['git save', 'git stash', 'git hold', 'git park'], correct: 1,
-    explain: 'git stash saves your uncommitted changes to a stack and reverts your working directory to the last commit. Pop them back later with git stash pop.' },
-  { q: 'Download remote changes without merging?', opts: ['git pull', 'git clone', 'git fetch', 'git download'], correct: 2,
-    explain: 'git fetch downloads new commits from the remote but doesn\'t touch your working directory or current branch. You decide when to merge.' },
-  { q: 'What is HEAD?', opts: ['The latest commit', 'Pointer to current branch', 'The main branch', 'The remote server'], correct: 1,
-    explain: 'HEAD is a pointer to whichever branch you currently have checked out. It\'s a file (.git/HEAD) containing something like "ref: refs/heads/main".' },
-  { q: 'Find which commit introduced a bug?', opts: ['git blame', 'git find', 'git bisect', 'git search'], correct: 2,
-    explain: 'git bisect does a binary search through your commit history. You mark commits as good/bad and it narrows down to the exact commit that introduced the bug.' },
-  { q: 'A branch is physically a...', opts: ['Folder copy', 'Compressed archive', 'Text file with a hash', 'Database entry'], correct: 2,
-    explain: 'A branch is just a tiny text file in .git/refs/heads/ containing the 40-character SHA-1 hash of the commit it points to. That\'s why creating branches is instant.' },
+    explain: 'git stash saves your changes to a hidden stack and cleans your working directory. Restore them with git stash pop.' },
+  { q: 'Download remote changes without merging?', opts: ['git pull', 'git fetch', 'git download', 'git sync'], correct: 1,
+    explain: 'git fetch downloads new commits from the remote but doesn\'t modify your working directory or current branch.' },
+  { q: 'Find which commit introduced a bug?', opts: ['git blame', 'git bisect', 'git find', 'git search'], correct: 1,
+    explain: 'git bisect does a binary search through commits. You mark each as good/bad and it narrows down to the culprit.' },
   { q: 'Combine two branches?', opts: ['git combine', 'git merge', 'git join', 'git connect'], correct: 1,
-    explain: 'git merge takes changes from one branch and integrates them into another. It creates a merge commit with two parents if the branches diverged.' },
-  { q: 'What does git clone do?', opts: ['Downloads only the latest version', 'Copies entire repo with full history', 'Creates a branch', 'Syncs two repos'], correct: 1,
-    explain: 'git clone copies the ENTIRE repository including every commit, branch, and tag. You get a fully independent copy with complete history.' },
-  { q: 'What does .gitignore do?', opts: ['Deletes files', 'Hides files from your OS', 'Tells git which files to skip', 'Encrypts sensitive files'], correct: 2,
-    explain: '.gitignore is a text file listing patterns of files git should never track. Useful for build artifacts, secrets, and OS files like .DS_Store.' },
-  { q: 'What is a merge conflict?', opts: ['A broken repository', 'Same lines changed in both branches', 'An authentication error', 'Two branches with same name'], correct: 1,
-    explain: 'A merge conflict happens when both branches modified the same lines in the same file. Git can\'t decide which version to keep, so you resolve it manually.' },
-  { q: 'What does git diff show?', opts: ['Commit history', 'Unstaged changes', 'Remote branches', 'Deleted files only'], correct: 1,
-    explain: 'git diff shows line-by-line changes in your working directory that haven\'t been staged yet. Use git diff --staged to see what\'s already staged.' },
-  { q: 'What is a "remote"?', opts: ['A backup drive', 'A nickname for a URL to another repo', 'A type of branch', 'A cloud server'], correct: 1,
-    explain: 'A remote is a shortname (like "origin") mapped to a URL where another copy of the repository lives. It\'s stored in .git/config.' },
-  { q: 'git pull is shorthand for...', opts: ['git clone + git push', 'git fetch + git merge', 'git add + git commit', 'git stash + git pull'], correct: 1,
-    explain: 'git pull = git fetch (download changes) + git merge (integrate them). That\'s why some people prefer doing fetch and merge separately for more control.' },
-  { q: 'What does git blame show?', opts: ['Errors in code', 'Who last changed each line', 'Merge conflicts', 'Uncommitted changes'], correct: 1,
-    explain: 'git blame annotates each line of a file with the commit hash, author, and date of the last change. Great for understanding who wrote what and when.' },
-  { q: 'Fast-forward merge means...', opts: ['A faster algorithm', 'Branch pointer moves forward, no merge commit', 'Skipping code review', 'Merging without conflicts'], correct: 1,
-    explain: 'A fast-forward happens when the target branch has no new commits since the source branched off. Git just moves the pointer forward \u2014 no merge commit needed.' },
-  { q: 'Interactive rebase lets you...', opts: ['Merge branches interactively', 'Reorder, squash, or drop commits', 'Chat with collaborators', 'Preview merge conflicts'], correct: 1,
-    explain: 'git rebase -i opens an editor where you can pick, squash, reword, or drop commits. Perfect for cleaning up messy commit history before sharing.' },
-  { q: 'What does git push -u do?', opts: ['Force pushes', 'Pushes and sets upstream tracking', 'Pushes to all remotes', 'Pushes unsigned commits'], correct: 1,
-    explain: 'The -u flag sets the upstream tracking branch, so future git push and git pull commands know where to go without you specifying the remote and branch.' },
-  { q: 'What does a commit object store?', opts: ['Just the changed files', 'A snapshot of all tracked files + metadata', 'Only the diff from previous commit', 'A compressed zip of the repo'], correct: 1,
-    explain: 'A commit stores a pointer to a tree object (snapshot of ALL files), author info, timestamp, message, and parent commit hash(es). It\'s a full snapshot, not a diff.' },
-  { q: 'What is the staging area for?', opts: ['Storing backups', 'Choosing exactly which changes go in the next commit', 'Running tests before push', 'Resolving merge conflicts'], correct: 1,
-    explain: 'The staging area lets you selectively prepare changes. You might have 5 modified files but only stage 2 for a focused commit. It\'s your commit drafting zone.' },
-  { q: 'What are the 4 object types in git?', opts: ['file, folder, commit, branch', 'blob, tree, commit, tag', 'add, commit, push, pull', 'source, build, test, deploy'], correct: 1,
-    explain: 'Everything in git\'s object database is one of 4 types: blob (file content), tree (directory listing), commit (snapshot + metadata), and tag (named reference to a commit).' },
-  { q: 'git reset --hard will...', opts: ['Undo last push', 'Discard all uncommitted changes', 'Delete the repository', 'Reset remote to match local'], correct: 1,
-    explain: 'git reset --hard moves HEAD and your branch pointer, AND overwrites your working directory and staging area. Any uncommitted work is gone permanently.' },
-  { q: 'What makes a merge commit special?', opts: ['It\'s larger than normal commits', 'It has two parent commits', 'It can\'t be reverted', 'It requires approval'], correct: 1,
-    explain: 'A merge commit has TWO parent hashes instead of one, recording exactly which two lines of development were combined. This preserves the full branch topology.' }
+    explain: 'git merge integrates changes from one branch into another, creating a merge commit if branches diverged.' },
+  { q: 'Copy a remote repo to your machine?', opts: ['git copy', 'git clone', 'git download', 'git fork'], correct: 1,
+    explain: 'git clone copies the entire repository with full history, all branches, and all tags to your local machine.' },
+  { q: 'See who last changed each line?', opts: ['git blame', 'git log', 'git show', 'git author'], correct: 0,
+    explain: 'git blame annotates each line of a file with the commit hash, author, and date of the most recent change.' },
+  { q: 'Switch to a different branch?', opts: ['git switch <branch>', 'git move <branch>', 'git go <branch>', 'git change <branch>'], correct: 0,
+    explain: 'git switch (or git checkout) moves HEAD to the specified branch and updates your working directory to match.' },
+  { q: 'View unstaged changes?', opts: ['git diff', 'git changes', 'git show', 'git status'], correct: 0,
+    explain: 'git diff shows line-by-line differences between your working directory and the staging area (unstaged changes).' },
+  { q: 'Replay commits on top of another branch?', opts: ['git replay', 'git move', 'git rebase', 'git transplant'], correct: 2,
+    explain: 'git rebase takes your commits and replays them on top of another branch, creating a linear history.' },
+  { q: 'Delete a local branch?', opts: ['git branch -d <name>', 'git delete <name>', 'git remove <name>', 'git drop <name>'], correct: 0,
+    explain: 'git branch -d deletes the branch pointer. Use -D (capital) to force-delete a branch with unmerged changes.' },
+  { q: 'Push and set upstream tracking?', opts: ['git push --track', 'git push -u origin <branch>', 'git push --upstream', 'git push --set'], correct: 1,
+    explain: 'git push -u (or --set-upstream) pushes and links your local branch to the remote, so future push/pull just works.' },
+  { q: 'See a summary of repo status?', opts: ['git info', 'git status', 'git check', 'git summary'], correct: 1,
+    explain: 'git status shows which files are staged, modified, or untracked — a quick overview of your working directory state.' },
+  { q: 'Fetch + merge in one command?', opts: ['git sync', 'git pull', 'git update', 'git download'], correct: 1,
+    explain: 'git pull is shorthand for git fetch + git merge. It downloads remote changes and immediately integrates them.' },
+  { q: 'Clean up commits interactively before sharing?', opts: ['git rebase -i', 'git squash', 'git clean', 'git tidy'], correct: 0,
+    explain: 'git rebase -i (interactive) opens an editor where you can pick, squash, reword, or drop commits.' },
+  { q: 'Create a commit from staged changes?', opts: ['git save', 'git commit', 'git push', 'git store'], correct: 1,
+    explain: 'git commit takes everything in the staging area and creates a new commit object with your message and metadata.' },
+  { q: 'Recover a "lost" commit after reset?', opts: ['git undo', 'git reflog', 'git recover', 'git restore'], correct: 1,
+    explain: 'git reflog shows every HEAD movement. Even after reset --hard, you can find the lost commit hash and restore it.' },
+  { q: 'Add a remote repository URL?', opts: ['git remote add <name> <url>', 'git add remote <url>', 'git url add <url>', 'git connect <url>'], correct: 0,
+    explain: 'git remote add creates a shortname (like "origin") mapped to a repository URL, stored in .git/config.' },
+  { q: 'Show details of a specific commit?', opts: ['git show <hash>', 'git detail <hash>', 'git view <hash>', 'git inspect <hash>'], correct: 0,
+    explain: 'git show displays the commit metadata (author, date, message) and the diff of changes introduced by that commit.' },
+  { q: 'Discard all uncommitted changes?', opts: ['git reset --hard', 'git clean', 'git undo all', 'git discard'], correct: 0,
+    explain: 'git reset --hard resets your working directory and staging area to match the last commit. Uncommitted work is lost.' },
+  { q: 'Create an annotated tag?', opts: ['git tag -a v1.0', 'git label v1.0', 'git mark v1.0', 'git tag --create v1.0'], correct: 0,
+    explain: 'git tag -a creates an annotated tag — a full git object with your name, date, and a message, pointing to a specific commit.' },
+  { q: 'Stage only part of a file\'s changes?', opts: ['git add -p', 'git add --part', 'git stage --lines', 'git add --select'], correct: 0,
+    explain: 'git add -p (patch mode) lets you interactively choose which hunks of changes within a file to stage.' }
 ];
 var SPEED_COUNT = 10;
 var SPEED_TIME = 15;
@@ -2521,15 +2557,20 @@ function endSpeed() {
   document.getElementById('speedStartBtn').textContent = 'Try Again (New Questions)';
 }
 
-// === Slide 17: Final Quiz ===
+// === Slide 17: Knowledge Assessment ===
+var FQ_TOTAL = 10;
 let fqAnswered = 0, fqCorrect = 0;
 const fqFeedback = {
-  'fq-1': { y: 'Exactly. Git stores a complete snapshot of all your files with each commit &mdash; not just the changes.', n: 'Git stores a complete snapshot of all files with each commit. The "diff" (what changed) is calculated on the fly when you need it, but it\'s not how data is stored.' },
-  'fq-2': { y: 'Yes! A branch is just a tiny text file containing one commit ID. That\'s why creating a branch is instant.', n: 'A branch is just a tiny text file that stores the ID of one commit &mdash; the latest commit on that branch.' },
-  'fq-3': { y: 'Right. Reset erases the commit from history (moves the branch back). Revert keeps the history intact and adds a new commit that undoes the changes.', n: 'Reset erases the commit from your branch\'s history. Revert is safer &mdash; it creates a new commit that undoes the changes, keeping the original history intact.' },
-  'fq-4': { y: 'The reflog (git\'s safety log) records every action. Even after reset --hard, you can find the lost commit ID in the reflog and restore it.', n: 'Git reflog is the answer. It\'s a safety log that records every action, letting you find and recover "lost" commits.' },
-  'fq-5': { y: 'Stash saves your work-in-progress to a hidden shelf and cleans your folder so you can safely switch branches.', n: 'Git stash saves your uncommitted changes to a hidden shelf, giving you a clean folder so you can switch branches safely.' },
-  'fq-6': { y: 'When someone else has pushed new commits to GitHub, you need to download them first (pull), then push your own.', n: 'Push fails when GitHub has commits you don\'t have yet. Download them first with git pull, then push.' },
+  'fq-1': { y: 'Exactly. Git stores a complete snapshot of all your files with each commit — not just the changes.', n: 'Git stores a complete snapshot of all files with each commit. The "diff" is calculated on the fly when you need it, but it\'s not how data is stored.' },
+  'fq-2': { y: 'Yes! A branch is just a tiny text file containing one commit hash. That\'s why creating a branch is instant.', n: 'A branch is just a tiny text file in .git/refs/heads/ storing one commit hash — the tip of that branch.' },
+  'fq-3': { y: 'Right. Reset moves the branch pointer back, erasing commits from history. Revert creates a new commit that undoes the changes, keeping history intact.', n: 'Reset erases the commit from your branch\'s history. Revert is safer — it creates a new commit that undoes the changes, keeping the original history intact.' },
+  'fq-4': { y: 'The reflog records every action. Even after reset --hard, you can find the lost commit hash in the reflog and restore it.', n: 'Git reflog is the answer. It\'s a safety log that records every HEAD movement, letting you find and recover "lost" commits.' },
+  'fq-5': { y: 'A merge commit has two parent hashes, recording exactly which two lines of development were combined.', n: 'A merge commit is special because it has TWO parent commits instead of one — it records which two branches were combined.' },
+  'fq-6': { y: 'Blob (file content), tree (directory), commit (snapshot + metadata), and tag (named reference). Everything in git is one of these four.', n: 'The four types are: blob (file content), tree (directory listing), commit (snapshot + metadata), and tag (named reference to a commit).' },
+  'fq-7': { y: 'The staging area lets you selectively prepare changes. You might have 5 modified files but only stage 2 for a focused commit.', n: 'The staging area is your commit drafting zone — it lets you pick exactly which changes go into the next commit, not all of them at once.' },
+  'fq-8': { y: 'When someone else has pushed new commits, the remote is ahead of you. Pull first to get their changes, then push yours.', n: 'Push fails when the remote has commits you don\'t have yet. Download them first with git pull, then push.' },
+  'fq-9': { y: 'When there\'s nothing to merge (target branch has no new commits), git just moves the pointer forward. No merge commit needed.', n: 'A fast-forward happens when the target branch has no new commits since you branched off. Git just slides the pointer forward — no merge commit is created.' },
+  'fq-10': { y: 'HEAD is a pointer to your current branch. It\'s a file (.git/HEAD) containing something like "ref: refs/heads/main".', n: 'HEAD is a pointer to whichever branch you currently have checked out. It\'s how git knows "where you are" in the commit history.' },
 };
 
 function fqCheck(id, btn, correct) {
@@ -2549,13 +2590,13 @@ function fqCheck(id, btn, correct) {
   fqAnswered++;
   if (correct) fqCorrect++;
   addScore();
-  if (fqAnswered === 6) {
+  if (fqAnswered === FQ_TOTAL) {
     const r = document.getElementById('fqResult');
     r.style.display = 'block';
-    const pct = Math.round(fqCorrect / 6 * 100);
-    document.getElementById('fqScore').textContent = fqCorrect + ' / 6 (' + pct + '%)';
-    if (fqCorrect === 6) document.getElementById('fqMsg').textContent = 'Flawless. You understand git deeply.';
-    else if (fqCorrect >= 4) document.getElementById('fqMsg').textContent = 'Solid understanding. Review the ones you missed.';
+    const pct = Math.round(fqCorrect / FQ_TOTAL * 100);
+    document.getElementById('fqScore').textContent = fqCorrect + ' / ' + FQ_TOTAL + ' (' + pct + '%)';
+    if (fqCorrect === FQ_TOTAL) document.getElementById('fqMsg').textContent = 'Flawless. You understand git deeply.';
+    else if (fqCorrect >= 7) document.getElementById('fqMsg').textContent = 'Solid understanding. Review the ones you missed.';
     else document.getElementById('fqMsg').textContent = 'Worth going through some sections again.';
   }
 }
@@ -2618,7 +2659,7 @@ function animateConfetti(ctx, canvas) {
 function initCertSlide() {
   // Set scores
   document.getElementById('certSpeedScore').textContent = speedCorrect + ' / ' + SPEED_COUNT;
-  document.getElementById('certFinalScore').textContent = fqCorrect + ' / 6';
+  document.getElementById('certFinalScore').textContent = fqCorrect + ' / ' + FQ_TOTAL;
   // Set date
   var d = new Date();
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -2754,7 +2795,7 @@ function downloadCert() {
   ctx.fillText('FINAL ASSESSMENT', bx2 + boxW / 2, boxY + 30);
   ctx.fillStyle = '#ffd700';
   ctx.font = '700 28px system-ui, sans-serif';
-  ctx.fillText(fqCorrect + ' / 6', bx2 + boxW / 2, boxY + 66);
+  ctx.fillText(fqCorrect + ' / ' + FQ_TOTAL, bx2 + boxW / 2, boxY + 66);
 
   // Bottom line + date
   ctx.strokeStyle = 'rgba(255,255,255,0.1)';
