@@ -1205,57 +1205,74 @@
 <div class="slide" id="s18">
   <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
 
-  <div style="text-align:center;margin-bottom:24px;">
+  <div style="text-align:center;margin-bottom:20px;">
     <h2 style="margin:0;font-size:24px;">Congratulations!</h2>
     <p style="color:var(--text-dim);margin:8px 0 0;">You've completed the Git Interactive Masterclass.</p>
   </div>
 
-  <div id="certNamePrompt" style="text-align:center;margin-bottom:20px;">
+  <div id="certNamePrompt" style="text-align:center;margin-bottom:16px;">
     <label style="font-size:14px;color:var(--text-dim);">Enter your name for the certificate:</label>
     <input type="text" id="certNameInput" placeholder="Your Name" autocomplete="off" style="display:block;margin:8px auto 0;padding:8px 16px;font-size:18px;text-align:center;background:#111;border:1px solid #444;border-radius:6px;color:var(--gold);font-family:inherit;width:280px;outline:none;" oninput="updateCertName()">
   </div>
 
-  <div id="certWrapper" style="perspective:800px;display:flex;justify-content:center;">
-    <div id="certCard" style="position:relative;width:580px;max-width:95vw;border-radius:16px;padding:3px;background:linear-gradient(135deg,var(--cyan),var(--gold),var(--purple),var(--ember),var(--cyan));background-size:400% 400%;animation:certBorderAnim 6s ease infinite;transition:transform 0.15s ease-out;transform-style:preserve-3d;">
+  <div id="certWrapper" style="perspective:1000px;display:flex;justify-content:center;">
+    <div id="certCard" style="position:relative;width:600px;max-width:95vw;border-radius:16px;padding:3px;background:linear-gradient(135deg,var(--cyan),var(--gold),var(--purple),var(--ember),var(--cyan));background-size:400% 400%;animation:certBorderAnim 6s ease infinite;transition:transform 0.2s ease-out;transform-style:preserve-3d;will-change:transform;cursor:default;">
 
-      <!-- Holographic shimmer overlay -->
-      <div id="certShimmer" style="position:absolute;top:0;left:0;right:0;bottom:0;border-radius:16px;background:radial-gradient(circle 200px at 50% 50%, rgba(255,255,255,0.06), transparent);pointer-events:none;z-index:2;transition:background 0.15s ease-out;"></div>
+      <!-- Holographic rainbow shine layer (color-dodge) -->
+      <div id="certShine" style="position:absolute;inset:3px;border-radius:14px;background:linear-gradient(115deg, transparent 20%, rgba(0,245,255,0.12) 30%, rgba(179,136,255,0.14) 38%, rgba(255,215,0,0.12) 44%, rgba(255,107,53,0.14) 50%, rgba(126,184,160,0.12) 56%, rgba(255,59,92,0.10) 62%, transparent 80%);background-size:200% 200%;mix-blend-mode:color-dodge;filter:brightness(0.9) contrast(1.8) saturate(0.7);pointer-events:none;z-index:4;opacity:0;transition:opacity 0.3s;"></div>
 
-      <div style="position:relative;z-index:1;background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:36px 32px;text-align:center;">
+      <!-- Glare spotlight layer (overlay) -->
+      <div id="certGlare" style="position:absolute;inset:3px;border-radius:14px;background:radial-gradient(farthest-corner circle at 50% 50%, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 30%, transparent 70%);mix-blend-mode:overlay;pointer-events:none;z-index:5;opacity:0;transition:opacity 0.3s;"></div>
 
-        <!-- Top decorative line -->
-        <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:20px;">
-          <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--cyan));"></div>
-          <div style="font-size:11px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;">Git Interactive Masterclass</div>
-          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);"></div>
-        </div>
+      <!-- Inner card content -->
+      <div id="certInner" style="position:relative;z-index:1;background:linear-gradient(165deg, rgba(14,14,22,0.97), rgba(8,8,14,0.99));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:40px 36px;text-align:center;overflow:hidden;transform:translateZ(0);">
 
-        <div style="font-size:28px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:6px;">Certificate of Completion</div>
-        <div style="font-size:12px;color:var(--text-dim);margin-bottom:24px;">This certifies that</div>
+        <!-- Subtle background pattern -->
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px);pointer-events:none;border-radius:14px;"></div>
 
-        <div id="certDisplayName" style="font-size:32px;font-weight:700;color:var(--cyan);min-height:44px;margin-bottom:4px;letter-spacing:0.5px;text-shadow:0 0 20px rgba(0,245,255,0.3);">&#8212;</div>
+        <!-- Content with parallax translateZ -->
+        <div id="certContent" style="position:relative;z-index:1;transform-style:preserve-3d;">
 
-        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:24px;">has completed the Git Interactive Masterclass<br>and demonstrated understanding of Git version control</div>
-
-        <!-- Score boxes -->
-        <div style="display:flex;gap:16px;justify-content:center;margin-bottom:24px;">
-          <div style="background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);border-radius:10px;padding:14px 20px;min-width:140px;">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px;">Speed Round</div>
-            <div style="font-size:24px;font-weight:700;color:var(--cyan);" id="certSpeedScore">-</div>
+          <!-- Top decorative line -->
+          <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:22px;transform:translateZ(10px);">
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(0,245,255,0.4));"></div>
+            <div style="font-size:10px;letter-spacing:5px;color:var(--cyan);text-transform:uppercase;opacity:0.8;">Git Interactive Masterclass</div>
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,245,255,0.4),transparent);"></div>
           </div>
-          <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:14px 20px;min-width:140px;">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px;">Final Assessment</div>
-            <div style="font-size:24px;font-weight:700;color:var(--gold);" id="certFinalScore">-</div>
+
+          <!-- Main title -->
+          <div style="transform:translateZ(30px);">
+            <div style="font-size:30px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:6px;text-shadow:0 0 30px rgba(255,215,0,0.2);">Certificate of Completion</div>
+            <div style="font-size:12px;color:#666;margin-bottom:28px;letter-spacing:1px;">THIS CERTIFIES THAT</div>
           </div>
-        </div>
 
-        <!-- Bottom decorative line + date -->
-        <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px;">
-          <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,#333);"></div>
-          <div style="font-size:11px;letter-spacing:2px;color:var(--text-dim);" id="certDate"></div>
-          <div style="flex:1;height:1px;background:linear-gradient(90deg,#333,transparent);"></div>
-        </div>
+          <!-- Name -->
+          <div style="transform:translateZ(40px);">
+            <div id="certDisplayName" style="font-size:34px;font-weight:700;color:var(--cyan);min-height:48px;margin-bottom:6px;letter-spacing:0.5px;text-shadow:0 0 30px rgba(0,245,255,0.25),0 0 60px rgba(0,245,255,0.1);">&#8212;</div>
+          </div>
 
+          <div style="font-size:14px;color:#888;line-height:1.7;margin-bottom:28px;transform:translateZ(15px);">has completed the Git Interactive Masterclass<br>and demonstrated understanding of Git version control</div>
+
+          <!-- Score boxes -->
+          <div style="display:flex;gap:16px;justify-content:center;margin-bottom:28px;transform:translateZ(25px);">
+            <div style="background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.15);border-radius:10px;padding:16px 24px;min-width:150px;">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:3px;color:#555;margin-bottom:8px;">Commands</div>
+              <div style="font-size:26px;font-weight:700;color:var(--cyan);" id="certSpeedScore">-</div>
+            </div>
+            <div style="background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.15);border-radius:10px;padding:16px 24px;min-width:150px;">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:3px;color:#555;margin-bottom:8px;">Knowledge</div>
+              <div style="font-size:26px;font-weight:700;color:var(--gold);" id="certFinalScore">-</div>
+            </div>
+          </div>
+
+          <!-- Bottom decorative line + date -->
+          <div style="display:flex;align-items:center;gap:12px;justify-content:center;transform:translateZ(10px);">
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08));"></div>
+            <div style="font-size:11px;letter-spacing:2px;color:#555;" id="certDate"></div>
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.08),transparent);"></div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -2673,32 +2690,65 @@ function updateCertName() {
   document.getElementById('certDisplayName').textContent = name || '\u2014';
 }
 
-// 3D tilt + shimmer on mouse move
-document.addEventListener('mousemove', function(e) {
-  var card = document.getElementById('certCard');
-  if (!card || card.closest('.slide').style.display === 'none') return;
-  var rect = card.getBoundingClientRect();
-  var cx = rect.left + rect.width / 2;
-  var cy = rect.top + rect.height / 2;
-  var dx = (e.clientX - cx) / (rect.width / 2);
-  var dy = (e.clientY - cy) / (rect.height / 2);
-  var maxTilt = 8;
-  var rotY = dx * maxTilt;
-  var rotX = -dy * maxTilt;
-  card.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
-  // Move shimmer
-  var shimmer = document.getElementById('certShimmer');
-  if (shimmer) {
-    var px = ((e.clientX - rect.left) / rect.width * 100);
-    var py = ((e.clientY - rect.top) / rect.height * 100);
-    shimmer.style.background = 'radial-gradient(circle 200px at ' + px + '% ' + py + '%, rgba(255,255,255,0.08), transparent)';
-  }
-});
+// === Premium 3D holographic card effect ===
+var certHovered = false;
 
-document.addEventListener('mouseleave', function() {
+function certMouseMove(e) {
   var card = document.getElementById('certCard');
-  if (card) card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-});
+  if (!card) return;
+  var slide = card.closest('.slide');
+  if (!slide || !slide.classList.contains('active')) return;
+
+  var rect = card.getBoundingClientRect();
+  // Normalized -0.5 to 0.5
+  var nx = (e.clientX - rect.left) / rect.width - 0.5;
+  var ny = (e.clientY - rect.top) / rect.height - 0.5;
+  // Percentage 0-100
+  var px = (e.clientX - rect.left) / rect.width * 100;
+  var py = (e.clientY - rect.top) / rect.height * 100;
+
+  // Check if mouse is over card area (with some margin)
+  var isOver = e.clientX >= rect.left - 40 && e.clientX <= rect.right + 40 &&
+               e.clientY >= rect.top - 40 && e.clientY <= rect.bottom + 40;
+
+  if (!isOver) {
+    if (certHovered) certMouseLeave();
+    return;
+  }
+
+  if (!certHovered) {
+    certHovered = true;
+    document.getElementById('certShine').style.opacity = '1';
+    document.getElementById('certGlare').style.opacity = '1';
+  }
+
+  // 3D tilt: rotateY from horizontal, rotateX from vertical (inverted)
+  var maxTilt = 12;
+  var rotY = nx * maxTilt * 2;
+  var rotX = -ny * maxTilt * 2;
+  card.style.transform = 'rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) scale3d(1.03,1.03,1.03)';
+
+  // Rainbow shine follows mouse (move the gradient)
+  var shine = document.getElementById('certShine');
+  shine.style.backgroundPosition = (50 + nx * 80).toFixed(1) + '% ' + (50 + ny * 80).toFixed(1) + '%';
+
+  // Glare spotlight tracks mouse exactly
+  var glare = document.getElementById('certGlare');
+  glare.style.background = 'radial-gradient(farthest-corner circle at ' + px.toFixed(1) + '% ' + py.toFixed(1) + '%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 25%, transparent 65%)';
+}
+
+function certMouseLeave() {
+  certHovered = false;
+  var card = document.getElementById('certCard');
+  if (card) card.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+  var shine = document.getElementById('certShine');
+  if (shine) shine.style.opacity = '0';
+  var glare = document.getElementById('certGlare');
+  if (glare) glare.style.opacity = '0';
+}
+
+document.addEventListener('mousemove', certMouseMove);
+document.addEventListener('mouseleave', certMouseLeave);
 
 function downloadCert() {
   var name = document.getElementById('certNameInput').value.trim() || 'Graduate';
