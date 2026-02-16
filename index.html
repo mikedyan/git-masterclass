@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git & GitHub – Interactive Masterclass</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a2e;
+    --border: #2a2a3e;
+    --text: #e0e0f0;
+    --text-dim: #7a7a9e;
+    --cyan: #00f5ff;
+    --ember: #ff6b35;
+    --gold: #ffd700;
+    --green: #7eb8a0;
+    --purple: #b388ff;
+    --red: #ff3b5c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; height: 52px;
+    background: rgba(18,18,26,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; z-index: 100;
+  }
+  .nav-title { font-size: 13px; color: var(--text-dim); }
+  .nav-title strong { color: var(--cyan); }
+  .nav-progress { display: flex; gap: 4px; align-items: center; }
+  .nav-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--bg3); border: 1px solid var(--border);
+    cursor: pointer; transition: all 0.3s;
+  }
+  .nav-dot.active { background: var(--cyan); border-color: var(--cyan); transform: scale(1.4); }
+  .nav-dot.visited { background: var(--green); border-color: var(--green); }
+  .nav-controls { display: flex; gap: 8px; }
+  .nav-btn {
+    padding: 5px 14px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg3); color: var(--text); cursor: pointer; font-size: 12px; transition: all 0.2s;
+  }
+  .nav-btn:hover { background: var(--border); }
+  .nav-btn.primary { background: var(--cyan); border-color: var(--cyan); color: #000; font-weight: 600; }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed; top: 52px; left: 0; right: 0; height: 2px;
+    background: var(--bg3); z-index: 100;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--cyan), var(--purple));
+    transition: width 0.4s ease; width: 0%;
+  }
+
+  /* Slides */
+  .slide-container {
+    margin-top: 54px; height: calc(100vh - 54px);
+    overflow-y: auto; scroll-behavior: smooth;
+  }
+  .slide {
+    display: none; min-height: calc(100vh - 54px); padding: 40px 48px;
+    max-width: 900px; margin: 0 auto; animation: fadeIn 0.4s ease;
+  }
+  .slide.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Typography */
+  h1 {
+    font-size: 42px; margin-bottom: 8px; font-weight: 700;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  h2 { font-size: 26px; margin-bottom: 14px; color: var(--cyan); }
+  h3 { font-size: 18px; margin: 20px 0 10px; color: var(--text); }
+  p, li { font-size: 15px; color: var(--text); margin-bottom: 10px; }
+  .subtitle { font-size: 17px; color: var(--text-dim); margin-bottom: 28px; }
+  .dim { color: var(--text-dim); }
+  strong { color: var(--cyan); font-weight: 600; }
+  code { background: var(--bg3); padding: 2px 6px; border-radius: 4px; font-family: 'SF Mono','Fira Code',monospace; font-size: 13px; }
+  ul { padding-left: 20px; margin-bottom: 14px; }
+
+  /* Boxes */
+  .box {
+    border-radius: 12px; padding: 18px; margin: 16px 0;
+    border: 1px solid var(--border); background: var(--bg2);
+  }
+  .box.insight { border-color: rgba(126,184,160,0.3); background: rgba(126,184,160,0.06); }
+  .box.analogy { border-color: rgba(179,136,255,0.3); background: linear-gradient(135deg, rgba(0,245,255,0.04), rgba(179,136,255,0.06)); }
+  .box.warning { border-color: rgba(255,107,53,0.3); background: rgba(255,107,53,0.06); }
+  .box-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
+    margin-bottom: 6px; font-weight: 700;
+  }
+  .box.insight .box-label { color: var(--green); }
+  .box.analogy .box-label { color: var(--purple); }
+  .box.warning .box-label { color: var(--ember); }
+
+  /* Concept cards */
+  .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }
+  .concept-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; cursor: pointer; transition: all 0.3s; overflow: hidden;
+  }
+  .concept-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .concept-card.revealed { border-color: var(--green); }
+  .concept-card .card-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .concept-card .card-hint { font-size: 12px; color: var(--text-dim); font-style: italic; }
+  .concept-card .card-content {
+    display: none; margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--border); font-size: 13px; line-height: 1.7;
+  }
+  .concept-card.revealed .card-content { display: block; }
+  .concept-card.revealed .card-hint { display: none; }
+
+  /* Terminal */
+  .terminal {
+    background: #000; border-radius: 10px; overflow: hidden;
+    margin: 18px 0; border: 1px solid var(--border);
+  }
+  .terminal-bar {
+    background: var(--bg3); padding: 7px 14px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .terminal-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .terminal-dot.r { background: #ff5f57; }
+  .terminal-dot.y { background: #febc2e; }
+  .terminal-dot.g { background: #28c840; }
+  .terminal-body {
+    padding: 14px 18px; font-family: 'SF Mono','Fira Code','Consolas',monospace;
+    font-size: 13px; min-height: 60px; max-height: 350px; overflow-y: auto;
+  }
+  .t-prompt { color: var(--green); }
+  .t-cmd { color: #fff; }
+  .t-out { color: var(--text-dim); }
+  .t-hi { color: var(--ember); }
+  .t-acc { color: var(--cyan); }
+  .t-err { color: var(--red); }
+  .t-grn { color: var(--green); }
+
+  /* Interactive terminal with input */
+  .sim-terminal .terminal-input-line {
+    display: flex; align-items: center; margin-top: 4px;
+  }
+  .sim-terminal .terminal-input {
+    background: transparent; border: none; color: #fff;
+    font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 13px;
+    outline: none; flex: 1; caret-color: var(--cyan);
+  }
+
+  /* Diagram */
+  .diagram {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 28px; margin: 18px 0; text-align: center; position: relative;
+  }
+  .diagram-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 12px 0; flex-wrap: wrap; }
+  .diagram-box {
+    padding: 14px 20px; border-radius: 10px; border: 2px solid var(--border);
+    background: var(--bg); font-weight: 600; font-size: 13px; min-width: 130px;
+    transition: all 0.5s; position: relative;
+  }
+  .diagram-box.hl { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,245,255,0.15); }
+  .diagram-box.hl-green { border-color: var(--green); box-shadow: 0 0 20px rgba(126,184,160,0.15); }
+  .box-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .diagram-arrow { color: var(--text-dim); font-size: 22px; transition: color 0.5s; }
+  .diagram-arrow.active { color: var(--cyan); }
+  .diagram-caption { font-size: 12px; color: var(--text-dim); margin-top: 8px; font-style: italic; }
+
+  /* Command buttons */
+  .cmd-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  .cmd-btn {
+    padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg2); color: var(--cyan); cursor: pointer;
+    font-family: 'SF Mono','Fira Code',monospace; font-size: 12px;
+    transition: all 0.2s; position: relative;
+  }
+  .cmd-btn:hover:not(:disabled) { background: var(--bg3); border-color: var(--cyan); transform: translateY(-1px); }
+  .cmd-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .cmd-btn.done { border-color: var(--green); color: var(--green); }
+  .cmd-step {
+    position: absolute; top: -7px; right: -7px;
+    background: var(--cyan); color: #000; width: 18px; height: 18px;
+    border-radius: 50%; font-size: 10px; display: flex; align-items: center;
+    justify-content: center; font-family: -apple-system, sans-serif; font-weight: 700;
+  }
+  .cmd-btn.done .cmd-step { background: var(--green); color: #000; }
+
+  /* Film strip scrubber */
+  .film-strip {
+    display: flex; gap: 3px; margin: 16px 0; overflow-x: auto;
+    padding: 12px 0;
+  }
+  .film-frame {
+    min-width: 120px; background: var(--bg2); border: 2px solid var(--border);
+    border-radius: 8px; padding: 10px; font-size: 11px; transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .film-frame.active { border-color: var(--cyan); background: rgba(0,245,255,0.05); }
+  .film-frame .frame-label { color: var(--cyan); font-weight: 700; font-size: 10px; text-transform: uppercase; margin-bottom: 4px; }
+  .film-frame .frame-files { color: var(--text-dim); font-family: monospace; font-size: 11px; }
+  .film-frame .frame-files .changed { color: var(--ember); font-weight: 600; }
+  .film-frame .frame-files .new { color: var(--green); font-weight: 600; }
+
+  input[type="range"] {
+    -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px;
+    background: var(--bg3); outline: none; margin: 10px 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--cyan); cursor: pointer; box-shadow: 0 0 10px rgba(0,245,255,0.4);
+  }
+
+  /* Drag and drop zones */
+  .drop-zones { display: flex; gap: 12px; margin: 18px 0; }
+  .drop-zone {
+    flex: 1; min-height: 120px; border: 2px dashed var(--border); border-radius: 12px;
+    padding: 14px; transition: all 0.3s; position: relative;
+  }
+  .drop-zone.drag-over { border-color: var(--cyan); background: rgba(0,245,255,0.05); }
+  .drop-zone .zone-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 8px; font-weight: 700;
+  }
+  .drop-zone .zone-files { display: flex; flex-direction: column; gap: 4px; min-height: 40px; }
+  .draggable-file {
+    padding: 6px 10px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; font-family: monospace; font-size: 12px; cursor: grab;
+    transition: all 0.2s; user-select: none;
+  }
+  .draggable-file:active { cursor: grabbing; }
+  .draggable-file.in-staging { border-color: var(--cyan); color: var(--cyan); }
+  .draggable-file.in-repo { border-color: var(--green); color: var(--green); }
+
+  /* Git graph */
+  .git-graph {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 28px; margin: 18px 0; min-height: 180px;
+  }
+  .git-graph svg { width: 100%; height: 100%; }
+
+  /* Conflict editor */
+  .conflict-editor {
+    width: 100%; min-height: 200px; background: #000; color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 14px;
+    font-family: 'SF Mono','Fira Code',monospace; font-size: 13px;
+    line-height: 1.7; resize: vertical; outline: none;
+  }
+  .conflict-editor:focus { border-color: var(--cyan); }
+
+  /* Consequence panels */
+  .consequence-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .consequence-card {
+    background: var(--bg2); border: 2px solid var(--border); border-radius: 10px;
+    padding: 14px; cursor: pointer; transition: all 0.3s; text-align: center;
+  }
+  .consequence-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .consequence-card.selected { border-color: var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.15); }
+  .consequence-card .cc-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .consequence-card .cc-cmd { font-family: monospace; font-size: 11px; color: var(--cyan); }
+  .consequence-result {
+    margin-top: 14px; padding: 16px; background: var(--bg2); border-radius: 10px;
+    border: 1px solid var(--border); display: none;
+  }
+  .consequence-result.show { display: block; }
+  .cr-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .cr-row:last-child { border-bottom: none; }
+  .cr-label { color: var(--text-dim); }
+
+  /* Speed round */
+  .speed-timer {
+    font-size: 48px; font-weight: 700; color: var(--cyan); text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .speed-timer.urgent { color: var(--red); animation: pulse 0.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .speed-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0; }
+  .speed-opt {
+    padding: 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg2); color: var(--text); cursor: pointer; font-size: 13px;
+    transition: all 0.15s; text-align: center;
+  }
+  .speed-opt:hover { border-color: var(--cyan); background: var(--bg3); }
+  .speed-opt.correct { border-color: var(--green); background: rgba(126,184,160,0.1); color: var(--green); }
+  .speed-opt.wrong { border-color: var(--red); background: rgba(255,59,92,0.1); color: var(--red); }
+
+  /* Quiz */
+  .quiz { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 16px 0; }
+  .quiz-q { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .quiz-opt {
+    display: block; width: 100%; padding: 10px 14px; margin-bottom: 6px;
+    border-radius: 8px; border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); cursor: pointer; font-size: 13px; text-align: left; transition: all 0.2s;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--cyan); background: var(--bg3); }
+  .quiz-opt.correct { border-color: var(--green); background: rgba(126,184,160,0.1); color: var(--green); }
+  .quiz-opt.wrong { border-color: var(--red); background: rgba(255,59,92,0.1); color: var(--red); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-fb { margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
+  .quiz-fb.show { display: block; }
+  .quiz-fb.correct { background: rgba(126,184,160,0.1); color: var(--green); }
+  .quiz-fb.wrong { background: rgba(255,59,92,0.1); color: var(--red); }
+
+  /* Pattern input */
+  .pattern-input {
+    width: 100%; padding: 10px 14px; background: #000; border: 1px solid var(--border);
+    border-radius: 8px; color: var(--cyan); font-family: monospace; font-size: 14px;
+    outline: none;
+  }
+  .pattern-input:focus { border-color: var(--cyan); }
+  .file-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .file-chip {
+    padding: 5px 10px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; font-family: monospace; font-size: 12px; transition: all 0.3s;
+  }
+  .file-chip.ignored { opacity: 0.3; text-decoration: line-through; border-color: var(--red); }
+  .file-chip.tracked { border-color: var(--green); color: var(--green); }
+
+  /* Bisect */
+  .bisect-commits { display: flex; gap: 4px; margin: 16px 0; flex-wrap: wrap; }
+  .bisect-commit {
+    width: 80px; height: 60px; border-radius: 8px; border: 2px solid var(--border);
+    background: var(--bg2); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;
+    font-size: 12px; font-family: monospace;
+  }
+  .bisect-commit.good { border-color: var(--green); background: rgba(126,184,160,0.1); }
+  .bisect-commit.bad { border-color: var(--red); background: rgba(255,59,92,0.1); }
+  .bisect-commit.current { border-color: var(--gold); box-shadow: 0 0 12px rgba(255,215,0,0.2); }
+  .bisect-commit.found { border-color: var(--ember); background: rgba(255,107,53,0.15); }
+
+  /* Pipeline */
+  .pipeline { display: flex; gap: 2px; margin: 16px 0; }
+  .pipe-stage {
+    flex: 1; padding: 14px; background: var(--bg); border: 1px solid var(--border);
+    cursor: pointer; transition: all 0.3s; min-width: 100px;
+  }
+  .pipe-stage:first-child { border-radius: 8px 0 0 8px; }
+  .pipe-stage:last-child { border-radius: 0 8px 8px 0; }
+  .pipe-stage.active { border-color: var(--green); background: rgba(126,184,160,0.05); }
+  .pipe-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+  .pipe-name { font-weight: 600; margin-top: 3px; font-size: 13px; }
+  .pipe-detail { display: none; margin-top: 6px; font-size: 11px; color: var(--text-dim); }
+  .pipe-stage.active .pipe-detail { display: block; }
+
+  /* Score */
+  .score-display {
+    position: fixed; bottom: 20px; right: 20px;
+    background: rgba(18,18,26,0.9); backdrop-filter: blur(8px);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; font-size: 12px; color: var(--text-dim); z-index: 100;
+  }
+  .score-display span { color: var(--green); font-weight: 600; }
+
+  .keyboard-hint {
+    position: fixed; bottom: 20px; left: 20px; font-size: 11px; color: var(--text-dim);
+    background: rgba(18,18,26,0.9); backdrop-filter: blur(8px);
+    padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); z-index: 100;
+  }
+  kbd { background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-size: 10px; }
+
+  /* Step indicators */
+  .step-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; padding: 12px; background: var(--bg2); border-radius: 8px; border: 1px solid var(--border); cursor: pointer; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--bg3);
+    border: 2px solid var(--border); display: flex; align-items: center;
+    justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; transition: all 0.3s;
+  }
+  .step-num.active { background: var(--cyan); border-color: var(--cyan); color: #000; }
+  .step-num.done { background: var(--green); border-color: var(--green); color: #000; }
+  .step-detail { display: none; margin-top: 8px; font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .concept-grid, .consequence-grid, .speed-options { grid-template-columns: 1fr; }
+    .drop-zones { flex-direction: column; }
+    .slide { padding: 20px; }
+    h1 { font-size: 30px; }
+    .pipeline { flex-wrap: wrap; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+
+  @keyframes glow { 0%,100% { box-shadow: 0 0 5px rgba(0,245,255,0.2); } 50% { box-shadow: 0 0 20px rgba(0,245,255,0.4); } }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<div class="nav">
+  <div class="nav-title"><strong>Git & GitHub</strong> &nbsp;Interactive Masterclass</div>
+  <div class="nav-progress" id="navProgress"></div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Back</button>
+    <button class="nav-btn primary" id="nextBtn" onclick="navigate(1)">Next</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="keyboard-hint">Navigate: <kbd>&larr;</kbd> <kbd>&rarr;</kbd></div>
+<div class="score-display">Explored: <span id="scoreDisplay">0</span> / <span id="scoreTotal">42</span></div>
+
+<div class="slide-container" id="slideContainer">
+
+<!-- ===== SLIDE 0: Welcome ===== -->
+<div class="slide" id="s0">
+  <div style="display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 140px);">
+    <h1>Git & GitHub</h1>
+    <p class="subtitle">An interactive masterclass &mdash; from snapshots to pull requests</p>
+    <div style="margin:24px 0;">
+      <p><strong>Git</strong> is a tool that saves every version of your project so you can go back in time, work with others, and never lose your work. <strong>GitHub</strong> is a website where people store and share their git projects online.</p>
+      <p style="margin-top:12px;">This is not a slideshow. It is a <strong>learning experience you interact with.</strong></p>
+      <ul style="margin-top:14px;">
+        <li>Drag files between git areas</li>
+        <li>Type real git commands in a simulated terminal</li>
+        <li>Resolve merge conflicts by editing code</li>
+        <li>Race against the clock in speed rounds</li>
+        <li>Hunt bugs with git bisect</li>
+      </ul>
+    </div>
+    <p class="dim">17 sections &middot; ~30 minutes &middot; No prior git knowledge assumed</p>
+  </div>
+</div>
+
+<!-- ===== SLIDE 1: Snapshot Mental Model ===== -->
+<div class="slide" id="s1">
+  <h2>1. The Mental Model</h2>
+  <p>Before touching any commands, let's understand what git <em>actually does</em>.</p>
+
+  <p>When you work on a project &mdash; a website, an app, a document &mdash; you make changes over time. Git lets you <strong>save snapshots</strong> of your entire project at any point. Each snapshot is called a <strong>commit</strong>. Think of a commit as pressing a "save" button that remembers the exact state of every file.</p>
+
+  <div class="box analogy">
+    <div class="box-label">Analogy</div>
+    Most people think git records every individual edit, like <strong>Track Changes</strong> in Google Docs. It doesn't. Git is more like a <strong>photo album</strong>. Every commit is a complete photograph of your entire project at that moment. Git stores "what everything looks like right now," not "what changed since last time."
+  </div>
+
+  <h3>Scrub through history</h3>
+  <p>Each "frame" below represents one commit (one saved snapshot). Drag the slider to move through time and see what files existed at each point:</p>
+
+  <input type="range" id="filmSlider" min="0" max="4" value="0" oninput="scrubFilm(this.value)">
+  <div id="filmLabel" style="text-align:center;font-size:13px;color:var(--text-dim);margin-bottom:8px;">Commit 1 of 5: "Initial project setup"</div>
+
+  <div class="film-strip" id="filmStrip"></div>
+
+  <div class="box insight" style="margin-top:18px;">
+    <div class="box-label">Key insight</div>
+    Every file in git gets a unique fingerprint called a <strong>hash</strong> &mdash; a long string of letters and numbers (like <code>e7a1f2d9b3...</code>) computed from the file's contents. If even one character in the file changes, the fingerprint is completely different. This means git can instantly detect any change, and two identical files always share the same fingerprint &mdash; so git never stores duplicate copies.
+  </div>
+</div>
+
+<!-- ===== SLIDE 2: Three Areas (Drag & Drop) ===== -->
+<div class="slide" id="s2">
+  <h2>2. The Three Areas</h2>
+  <p>Saving in git is a two-step process (not just one click). Every file in your project lives in one of three places:</p>
+  <ul>
+    <li><strong style="color:var(--ember);">Working Directory</strong> &mdash; the actual folder on your computer where you edit files</li>
+    <li><strong style="color:var(--cyan);">Staging Area</strong> &mdash; a "preparation zone" where you select which changes to include in the next save</li>
+    <li><strong style="color:var(--green);">Repository</strong> &mdash; the permanent history of all saved snapshots (commits)</li>
+  </ul>
+  <p><strong>Drag the files</strong> through the workflow: first to staging, then to the repository.</p>
+
+  <div class="drop-zones" id="dropZones">
+    <div class="drop-zone" id="zone-working" ondragover="dzOver(event)" ondrop="dzDrop(event,'working')" ondragleave="dzLeave(event)">
+      <div class="zone-title" style="color:var(--ember);">Working Directory</div>
+      <div class="zone-files" id="working-files">
+        <div class="draggable-file" draggable="true" ondragstart="dzStart(event)" data-file="login.py" id="file-login">login.py</div>
+        <div class="draggable-file" draggable="true" ondragstart="dzStart(event)" data-file="utils.py" id="file-utils">utils.py</div>
+        <div class="draggable-file" draggable="true" ondragstart="dzStart(event)" data-file="README.md" id="file-readme">README.md</div>
+      </div>
+    </div>
+    <div class="drop-zone" id="zone-staging" ondragover="dzOver(event)" ondrop="dzDrop(event,'staging')" ondragleave="dzLeave(event)">
+      <div class="zone-title" style="color:var(--cyan);">Staging Area</div>
+      <div class="zone-files" id="staging-files"></div>
+    </div>
+    <div class="drop-zone" id="zone-repo" ondragover="dzOver(event)" ondrop="dzDrop(event,'repo')" ondragleave="dzLeave(event)">
+      <div class="zone-title" style="color:var(--green);">Repository</div>
+      <div class="zone-files" id="repo-files"></div>
+    </div>
+  </div>
+
+  <div id="dzFeedback" style="font-size:13px;color:var(--text-dim);min-height:40px;margin:8px 0;"></div>
+
+  <div class="box analogy">
+    <div class="box-label">Analogy</div>
+    <strong>Working directory</strong> = your desk. <strong>Staging</strong> = putting a letter in an envelope. <strong>Commit</strong> = dropping it in the mailbox. You can keep editing on your desk without affecting what's already mailed.
+  </div>
+
+  <div class="box warning">
+    <div class="box-label">Why staging exists</div>
+    Changed 5 files but only want to commit 2? Drag just those 2 to staging, then to the repo. The other 3 stay in your working directory. <strong>Surgical precision</strong> over what goes into each commit.
+  </div>
+</div>
+
+<!-- ===== SLIDE 3: Object Model (Build-a-Commit) ===== -->
+<div class="slide" id="s3">
+  <h2>3. Inside .git &mdash; How Git Stores Your Files</h2>
+  <p>When you run <code>git init</code> in a folder, git creates a hidden folder called <code>.git/</code> inside it. This is where ALL of your project's history lives. Everything git knows is stored as one of <strong>4 types of objects</strong>. Click each step to see how git builds a commit from your files:</p>
+
+  <div class="cmd-buttons" id="objButtons">
+    <button class="cmd-btn" id="obj-0" onclick="objStep(0)"><span class="cmd-step">1</span>Hash the files</button>
+    <button class="cmd-btn" id="obj-1" onclick="objStep(1)" disabled><span class="cmd-step">2</span>Build the tree</button>
+    <button class="cmd-btn" id="obj-2" onclick="objStep(2)" disabled><span class="cmd-step">3</span>Create the commit</button>
+    <button class="cmd-btn" id="obj-3" onclick="objStep(3)" disabled><span class="cmd-step">4</span>Tag it</button>
+    <button class="cmd-btn" id="obj-4" onclick="objStep(4)" disabled><span class="cmd-step">5</span>Explore .git/</button>
+    <button class="cmd-btn" id="obj-5" onclick="objStep(5)" disabled><span class="cmd-step">6</span>Follow the refs</button>
+  </div>
+
+  <div class="diagram" id="objDiagram" style="text-align:left;min-height:180px;">
+    <div id="objContent" style="font-family:'SF Mono',monospace;font-size:13px;line-height:2;">
+      <span class="dim">Click "Hash the files" to begin...</span>
+    </div>
+  </div>
+
+  <div id="objExplain" style="font-size:14px;margin-top:12px;">
+    <p class="dim">Each step reveals how git internally creates a commit.</p>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4: Terminal Sandbox ===== -->
+<div class="slide" id="s4">
+  <h2>4. Terminal Sandbox</h2>
+  <p>Git is controlled by typing commands into a <strong>terminal</strong> (also called command line or console) &mdash; the black text window that programmers use. Instead of clicking buttons, you type instructions like <code>git add file.txt</code>.</p>
+  <p>Below is a simulated terminal. Type <code>git init</code> and press Enter to create a new repository (this tells git to start tracking files in this folder).</p>
+
+  <div class="terminal sim-terminal" id="simTerminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot r"></div>
+      <div class="terminal-dot y"></div>
+      <div class="terminal-dot g"></div>
+      <span style="margin-left:10px;font-size:11px;color:var(--text-dim);">~/my-project</span>
+    </div>
+    <div class="terminal-body" id="termBody">
+      <div class="terminal-input-line">
+        <span class="t-prompt">$ </span>
+        <input class="terminal-input" id="termInput" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type a git command...">
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <p class="dim" style="font-size:12px;">Try: <code>git init</code> &rarr; <code>git status</code> &rarr; <code>git add login.py</code> &rarr; <code>git commit -m "first commit"</code> &rarr; <code>git log</code> &rarr; <code>git branch feature</code> &rarr; <code>git checkout feature</code></p>
+  </div>
+
+  <div id="termHints" style="margin-top:14px;padding:12px;background:var(--bg2);border-radius:8px;border:1px solid var(--border);font-size:13px;">
+    <strong style="color:var(--gold);">Hint:</strong> <span id="termHintText">Start with <code>git init</code> to create a new repository.</span>
+  </div>
+</div>
+
+<!-- ===== SLIDE 5: Branches ===== -->
+<div class="slide" id="s5">
+  <h2>5. Branches &mdash; Parallel Timelines</h2>
+  <p>Imagine you want to try a new idea without risking your working code. A <strong>branch</strong> lets you create a parallel timeline &mdash; a separate line of development where you can experiment freely. If it works, you merge it back. If not, you throw it away. Your original code stays safe.</p>
+
+  <div class="box insight">
+    <div class="box-label">The revelation</div>
+    Under the hood, a branch is incredibly simple: it is just a tiny text file that stores the ID (hash) of the latest commit on that branch. Creating a branch doesn't copy any files &mdash; it just creates this tiny file. That's why branching in git is instant and free.
+  </div>
+
+  <p>Click each step to build the visualization:</p>
+
+  <div class="git-graph" id="branchGraph">
+    <svg viewBox="0 0 800 200" id="branchSvg"></svg>
+  </div>
+
+  <div class="cmd-buttons" id="branchBtns">
+    <button class="cmd-btn" id="br-0" onclick="brStep(0)"><span class="cmd-step">1</span>3 commits on main</button>
+    <button class="cmd-btn" id="br-1" onclick="brStep(1)" disabled><span class="cmd-step">2</span>git checkout -b feature</button>
+    <button class="cmd-btn" id="br-2" onclick="brStep(2)" disabled><span class="cmd-step">3</span>commit on feature</button>
+    <button class="cmd-btn" id="br-3" onclick="brStep(3)" disabled><span class="cmd-step">4</span>commit on main</button>
+  </div>
+
+  <div id="brExplain" style="margin-top:12px;font-size:14px;">
+    <p class="dim">Click step 1 to begin.</p>
+  </div>
+
+  <div class="box warning" style="margin-top:20px;">
+    <div class="box-label">HEAD</div>
+    <strong>HEAD</strong> is git's way of knowing "which branch am I currently working on?" It is a marker that points to your current branch. When you make a new commit, it gets added to whichever branch HEAD is pointing at. So: HEAD tells git your current branch, and the branch tells git your latest commit.
+  </div>
+</div>
+
+<!-- ===== SLIDE 6: Merge Conflicts (Interactive Editor) ===== -->
+<div class="slide" id="s6">
+  <h2>6. Merge Conflicts</h2>
+  <p>When you try to combine two branches (<strong>merging</strong>), git usually handles it automatically. But if both branches changed <em>the same line</em> in the same file, git doesn't know which version to keep. This is called a <strong>merge conflict</strong>.</p>
+
+  <div class="box warning">
+    <div class="box-label">The scenario</div>
+    You ran <code>git merge feature</code> to combine the "feature" branch into "main." Both branches edited line 3 of the file <code>auth.py</code>. Git inserted special markers (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>) to show you both versions. The text between <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> and <code>=======</code> is YOUR version. The text between <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature</code> is the OTHER branch's version. Your job: edit the file below to keep the code you want and <strong>delete all the marker lines</strong>.
+  </div>
+
+  <h3>Edit the file to resolve the conflict:</h3>
+  <textarea class="conflict-editor" id="conflictEditor">def authenticate(user, password):
+    db = get_database()
+<<<<<<< HEAD
+    result = check_password(user, password)
+    log_attempt(user, success=result)
+=======
+    result = verify_credentials(user, password)
+    if not result:
+        raise AuthError("Invalid credentials")
+>>>>>>> feature
+    return result</textarea>
+
+  <div style="margin-top:12px;display:flex;gap:8px;">
+    <button class="cmd-btn" onclick="checkConflict()" style="padding:10px 20px;">Check Resolution</button>
+    <button class="cmd-btn" onclick="resetConflict()" style="padding:10px 20px;color:var(--text-dim);">Reset</button>
+  </div>
+  <div id="conflictFeedback" style="margin-top:12px;font-size:14px;min-height:24px;"></div>
+
+  <div class="box insight" style="margin-top:16px;">
+    <div class="box-label">Key insight</div>
+    Conflict markers are just text: <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. Remove them, keep the code you want (or combine both), then <code>git add</code> and <code>git commit</code>. The merge is complete.
+  </div>
+</div>
+
+<!-- ===== SLIDE 7: Rebase (Before/After Toggle) ===== -->
+<div class="slide" id="s7">
+  <h2>7. Rebase vs Merge</h2>
+  <p>There are two strategies to combine branches. <strong>Merge</strong> keeps the full history showing that a branch existed. <strong>Rebase</strong> rewrites history to make it look like your work happened after everything else, creating a clean straight line. Click to toggle between them and see the difference:</p>
+
+  <div style="display:flex;gap:8px;margin:16px 0;">
+    <button class="cmd-btn" id="rbMergeBtn" onclick="showRebaseView('merge')" style="padding:10px 20px;border-color:var(--green);color:var(--green);">Merge</button>
+    <button class="cmd-btn" id="rbRebaseBtn" onclick="showRebaseView('rebase')" style="padding:10px 20px;">Rebase</button>
+  </div>
+
+  <div class="diagram" id="rebaseDiagram" style="min-height:140px;">
+    <pre id="rebaseArt" style="font-family:'SF Mono',monospace;font-size:14px;text-align:left;display:inline-block;line-height:1.8;"></pre>
+    <div class="diagram-caption" id="rebaseCaption"></div>
+  </div>
+
+  <div id="rebaseExplain" style="font-size:14px;margin-top:12px;"></div>
+
+  <div class="concept-grid" style="margin-top:16px;">
+    <div class="concept-card" onclick="revealCard(this)" style="border-left:3px solid var(--green);">
+      <div class="card-title">When to merge</div>
+      <div class="card-hint">Click to reveal</div>
+      <div class="card-content">
+        <ul><li>You want to <strong>preserve history</strong> &mdash; show the branch existed</li>
+        <li>The branch was shared with others</li>
+        <li><strong>Safer</strong> &mdash; never rewrites history</li></ul>
+      </div>
+    </div>
+    <div class="concept-card" onclick="revealCard(this)" style="border-left:3px solid var(--ember);">
+      <div class="card-title">When to rebase</div>
+      <div class="card-hint">Click to reveal</div>
+      <div class="card-content">
+        <ul><li>You want <strong>clean, linear history</strong></li>
+        <li>Your branch is local only (not shared with others)</li>
+        <li><strong>Dangerous if misused</strong> &mdash; changes commit IDs, which confuses anyone who had the old versions</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 8: Reset vs Revert (Consequence Chain) ===== -->
+<div class="slide" id="s8">
+  <h2>8. Undo: Reset vs Revert</h2>
+  <p>Everyone makes mistakes. You saved (committed) something wrong and need to undo it. Git gives you three options, and they work very differently. <strong>Click each one</strong> to see what happens:</p>
+
+  <div class="diagram" style="padding:14px;">
+    <div style="font-family:monospace;font-size:13px;color:var(--text-dim);">
+      Your commit history: A &rarr; B &rarr; <span style="color:var(--red);">C (the bad commit you want to undo)</span> &larr; you are here
+    </div>
+  </div>
+
+  <div class="consequence-grid" id="undoGrid">
+    <div class="consequence-card" onclick="showUndo('soft')">
+      <div class="cc-title">Reset --soft</div>
+      <div class="cc-cmd">git reset --soft HEAD~1</div>
+    </div>
+    <div class="consequence-card" onclick="showUndo('hard')">
+      <div class="cc-title">Reset --hard</div>
+      <div class="cc-cmd">git reset --hard HEAD~1</div>
+    </div>
+    <div class="consequence-card" onclick="showUndo('revert')">
+      <div class="cc-title">Revert</div>
+      <div class="cc-cmd">git revert HEAD</div>
+    </div>
+  </div>
+
+  <div class="consequence-result" id="undoResult">
+    <div id="undoContent"></div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 9: Reflog (Time-Travel Recovery) ===== -->
+<div class="slide" id="s9">
+  <h2>9. The Reflog &mdash; Git's Safety Net</h2>
+
+  <div class="box insight">
+    <div class="box-label">The secret</div>
+    Think you lost your work? Almost certainly not. Git secretly keeps a log called the <strong>reflog</strong> (short for "reference log") &mdash; a diary recording every action you've taken. Even if you accidentally deleted commits with <code>git reset --hard</code>, the reflog remembers where everything was, and you can restore it.
+  </div>
+
+  <h3>Mission: Recover the lost commit</h3>
+  <p>You accidentally ran <code>git reset --hard HEAD~2</code> (which means "go back 2 commits and erase everything after that"). Your last two commits, D and E, have disappeared from your branch. But the reflog below shows every recent action. Each entry has a hash (the commit's ID) and a description. <strong>Which entry do you need to return to?</strong></p>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot r"></div><div class="terminal-dot y"></div><div class="terminal-dot g"></div>
+      <span style="margin-left:10px;font-size:11px;color:var(--text-dim);">git reflog</span>
+    </div>
+    <div class="terminal-body" id="reflogBody">
+      <div><span class="t-hi">c3f1a2b</span> <span class="t-grn">HEAD@{0}</span> <span class="t-out">reset: moving to HEAD~2</span></div>
+      <div><span class="t-hi">e7d4f9a</span> <span class="t-grn">HEAD@{1}</span> <span class="t-out">commit: Add payment processing</span></div>
+      <div><span class="t-hi">b2a8c1e</span> <span class="t-grn">HEAD@{2}</span> <span class="t-out">commit: Fix auth validation</span></div>
+      <div><span class="t-hi">c3f1a2b</span> <span class="t-grn">HEAD@{3}</span> <span class="t-out">commit: Update database schema</span></div>
+      <div><span class="t-hi">a1b5d3f</span> <span class="t-grn">HEAD@{4}</span> <span class="t-out">commit: Initial setup</span></div>
+    </div>
+  </div>
+
+  <p style="margin-top:12px;">Which reflog entry should you reset to in order to recover <strong>both</strong> lost commits?</p>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+    <button class="cmd-btn" onclick="checkReflog(this,0)" style="padding:8px 16px;">HEAD@{0} (c3f1a2b)</button>
+    <button class="cmd-btn" onclick="checkReflog(this,1)" style="padding:8px 16px;">HEAD@{1} (e7d4f9a)</button>
+    <button class="cmd-btn" onclick="checkReflog(this,2)" style="padding:8px 16px;">HEAD@{2} (b2a8c1e)</button>
+    <button class="cmd-btn" onclick="checkReflog(this,3)" style="padding:8px 16px;">HEAD@{3} (c3f1a2b)</button>
+  </div>
+
+  <div id="reflogFeedback" style="font-size:14px;min-height:24px;"></div>
+</div>
+
+<!-- ===== SLIDE 10: Stash (Interruption Simulation) ===== -->
+<div class="slide" id="s10">
+  <h2>10. Stash &mdash; The Clipboard</h2>
+
+  <div class="box analogy">
+    <div class="box-label">Scenario</div>
+    You are mid-feature, files half-edited. Suddenly a critical bug is reported on main. You need to switch branches, but you <strong>can't commit</strong> half-done work. What do you do?
+  </div>
+
+  <h3>Click each step to handle the interruption:</h3>
+
+  <div id="stashFlow">
+    <div class="step-row" id="stash-0" onclick="stashStep(0)">
+      <div class="step-num" id="stash-num-0">1</div>
+      <div><strong>git stash</strong> &mdash; Save your work-in-progress to a hidden shelf
+        <div class="step-detail" id="stash-detail-0">Your changes are saved and the working directory is clean. The stash is a special storage area &mdash; like sliding your messy desk into a drawer. You can have multiple stashes stacked up.</div>
+      </div>
+    </div>
+    <div class="step-row" id="stash-1" onclick="stashStep(1)">
+      <div class="step-num" id="stash-num-1">2</div>
+      <div><strong>git checkout main</strong> &mdash; Switch to fix the bug
+        <div class="step-detail" id="stash-detail-1">With a clean working directory, you can safely switch branches. Fix the bug, commit it, push. Crisis handled.</div>
+      </div>
+    </div>
+    <div class="step-row" id="stash-2" onclick="stashStep(2)">
+      <div class="step-num" id="stash-num-2">3</div>
+      <div><strong>git checkout feature</strong> &mdash; Return to your feature
+        <div class="step-detail" id="stash-detail-2">Back on the feature branch. But your half-done work is still hidden in the stash.</div>
+      </div>
+    </div>
+    <div class="step-row" id="stash-3" onclick="stashStep(3)">
+      <div class="step-num" id="stash-num-3">4</div>
+      <div><strong>git stash pop</strong> &mdash; Restore your work-in-progress
+        <div class="step-detail" id="stash-detail-3">Your uncommitted changes are restored exactly as you left them. The stash entry is removed. It is as if the interruption never happened. <strong>Stash commands:</strong> <code>git stash list</code> (see all stashes), <code>git stash drop</code> (discard one), <code>git stash apply</code> (restore without removing).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 11: Remotes (Animated Sync) ===== -->
+<div class="slide" id="s11">
+  <h2>11. Remotes &mdash; Working With Others</h2>
+  <p>So far, everything has been on your own computer. But git is built for <strong>collaboration</strong>. A <strong>remote</strong> is a copy of your project stored somewhere else &mdash; usually on a website like GitHub. The word <strong>"origin"</strong> is git's default nickname for the remote you cloned from.</p>
+
+  <div class="box insight">
+    <div class="box-label">Key insight</div>
+    Your laptop's copy and GitHub's copy are <strong>equals</strong>. Both have the full history. GitHub is not "the master" &mdash; it's just another copy that's accessible online so your team can share work through it.
+  </div>
+
+  <p>Click each step to see how changes flow between your laptop and GitHub:</p>
+
+  <div class="diagram" id="remoteDiagram">
+    <div class="diagram-row">
+      <div class="diagram-box" id="rem-local" style="min-width:180px;">
+        <div class="box-label">Your Laptop</div>
+        <div id="rem-local-state" style="font-size:12px;margin-top:6px;font-family:monospace;">main: A&mdash;B&mdash;C</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+        <div id="rem-push-arrow" style="font-size:14px;color:var(--text-dim);">&nbsp;</div>
+        <div id="rem-pull-arrow" style="font-size:14px;color:var(--text-dim);">&nbsp;</div>
+      </div>
+      <div class="diagram-box" id="rem-remote" style="min-width:180px;">
+        <div class="box-label">GitHub (origin)</div>
+        <div id="rem-remote-state" style="font-size:12px;margin-top:6px;font-family:monospace;">main: A&mdash;B&mdash;C</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cmd-buttons" id="remoteBtns">
+    <button class="cmd-btn" id="rem-0" onclick="remStep(0)"><span class="cmd-step">1</span>git commit (local)</button>
+    <button class="cmd-btn" id="rem-1" onclick="remStep(1)" disabled><span class="cmd-step">2</span>git push</button>
+    <button class="cmd-btn" id="rem-2" onclick="remStep(2)" disabled><span class="cmd-step">3</span>teammate pushes E</button>
+    <button class="cmd-btn" id="rem-3" onclick="remStep(3)" disabled><span class="cmd-step">4</span>git pull</button>
+  </div>
+
+  <div id="remExplain" style="margin-top:12px;font-size:14px;"><p class="dim">Click step 1 to begin.</p></div>
+
+  <div class="concept-grid" style="margin-top:16px;">
+    <div class="concept-card" onclick="revealCard(this)">
+      <div class="card-title">git fetch vs git pull</div>
+      <div class="card-hint">Click to reveal</div>
+      <div class="card-content"><strong>fetch</strong> downloads new commits from GitHub but does NOT merge them into your branch. <strong>pull</strong> = fetch + merge (download AND combine in one step). Fetch is safer &mdash; you can look at what changed before merging. <code>origin/main</code> is your local copy of what GitHub's main branch looks like.</div>
+    </div>
+    <div class="concept-card" onclick="revealCard(this)">
+      <div class="card-title">git clone</div>
+      <div class="card-hint">Click to reveal</div>
+      <div class="card-content">Downloads a complete copy of a project from GitHub to your computer. Gets ALL the history, ALL branches, everything. Automatically sets up <code>origin</code> as a nickname for the GitHub URL you cloned from. You now have your own fully independent copy.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 12: .gitignore (Pattern Matching Game) ===== -->
+<div class="slide" id="s12">
+  <h2>12. .gitignore &mdash; The Bouncer</h2>
+  <p>Not every file in your project should be saved by git. For example:</p>
+  <ul>
+    <li><strong>.env files</strong> contain passwords and secret keys &mdash; you never want these shared publicly</li>
+    <li><strong>node_modules/</strong> is a folder with thousands of downloaded library files &mdash; too large and easily re-downloaded</li>
+    <li><strong>.DS_Store</strong> is a hidden Mac file that tracks folder display settings &mdash; irrelevant to your project</li>
+  </ul>
+  <p>The <code>.gitignore</code> file is a simple text file where you list patterns of files that git should completely ignore. Type patterns below to practice.</p>
+
+  <h3>Goal: ignore the junk files without ignoring source code</h3>
+
+  <div class="file-list" id="ignoreFiles"></div>
+
+  <div style="margin-top:12px;">
+    <input class="pattern-input" id="ignoreInput" type="text" placeholder="Type a .gitignore pattern and press Enter..." autocomplete="off">
+  </div>
+
+  <div style="margin-top:8px;font-size:12px;color:var(--text-dim);" id="ignorePatterns">Patterns added: <span id="ignorePatternList">none</span></div>
+  <div id="ignoreFeedback" style="margin-top:8px;font-size:14px;min-height:20px;"></div>
+
+  <div class="box insight" style="margin-top:16px;">
+    <div class="box-label">Pattern syntax</div>
+    <code>*.log</code> = all .log files. <code>build/</code> = the build folder. <code>!important.log</code> = except this file. <code>**/*.pyc</code> = all .pyc files in any subdirectory. Lines starting with <code>#</code> are comments.
+  </div>
+</div>
+
+<!-- ===== SLIDE 13: GitHub PRs (Code Review Simulation) ===== -->
+<div class="slide" id="s13">
+  <h2>13. GitHub &mdash; Pull Requests</h2>
+  <p>A <strong>Pull Request</strong> (or "PR") is how you propose changes to someone else's project on GitHub. It's not a git feature &mdash; it's a <strong>GitHub feature</strong> built on top of git. The name means: "I'm <em>requesting</em> that you <em>pull</em> my changes into your project." Walk through the flow:</p>
+
+  <div id="prFlow">
+    <div class="step-row" onclick="prStep(0)">
+      <div class="step-num" id="pr-num-0">1</div>
+      <div><strong>Fork</strong> &mdash; Make your own copy of someone else's project
+        <div class="step-detail" id="pr-detail-0">A "fork" is a personal copy of someone else's project on your GitHub account. Click "Fork" on <code>github.com/project/repo</code> and GitHub creates <code>github.com/you/repo</code>. You can now make changes to your copy without affecting the original.</div>
+      </div>
+    </div>
+    <div class="step-row" onclick="prStep(1)">
+      <div class="step-num" id="pr-num-1">2</div>
+      <div><strong>Clone & Branch</strong> &mdash; Download it and start working
+        <div class="step-detail" id="pr-detail-1"><code>git clone</code> downloads your fork to your computer. Then <code>git checkout -b fix-bug</code> creates a new branch (a parallel timeline) for your changes. Make your edits, commit them, then upload your branch to GitHub with <code>git push origin fix-bug</code>.</div>
+      </div>
+    </div>
+    <div class="step-row" onclick="prStep(2)">
+      <div class="step-num" id="pr-num-2">3</div>
+      <div><strong>Open PR</strong> &mdash; Ask upstream to merge your branch
+        <div class="step-detail" id="pr-detail-2">On GitHub, create a PR: "Please merge <code>you/repo:fix-bug</code> into <code>project/repo:main</code>." Write a description, attach screenshots, reference issues.</div>
+      </div>
+    </div>
+    <div class="step-row" onclick="prStep(3)">
+      <div class="step-num" id="pr-num-3">4</div>
+      <div><strong>Review</strong> &mdash; Teammates review your code
+        <div class="step-detail" id="pr-detail-3">Reviewers read the diff line-by-line. They can <strong>comment</strong>, <strong>approve</strong>, or <strong>request changes</strong>. Push more commits to address feedback &mdash; the PR updates automatically.</div>
+      </div>
+    </div>
+    <div class="step-row" onclick="prStep(4)">
+      <div class="step-num" id="pr-num-4">5</div>
+      <div><strong>Merge</strong> &mdash; Your code enters the official project
+        <div class="step-detail" id="pr-detail-4">A maintainer clicks "Merge." Your commits are now in the official repo. Sync your fork: <code>git pull upstream main && git push origin main</code>. Delete your feature branch.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 14: Git Bisect (Binary Search Detective) ===== -->
+<div class="slide" id="s14">
+  <h2>14. Git Bisect &mdash; Find the Bug</h2>
+  <p>Imagine your project has 8 saved versions (commits) and somewhere along the way a bug appeared. You could check every single version one by one &mdash; but that's slow. <strong>Git bisect</strong> is smarter: it uses a "split in half" strategy. It checks the middle version first, then narrows down to the half that contains the bug, checks the middle of THAT, and so on. This way, even with 8 commits, you find the bug in just 3 steps instead of 8.</p>
+
+  <div class="box warning">
+    <div class="box-label">The mission</div>
+    Commit 1 was good (no bug). Commit 8 is bad (has the bug). Bisect will pick a commit in the middle for you to test. <strong>Mark it as good or bad</strong>, and bisect will narrow down the search. Find the commit that introduced the bug!
+  </div>
+
+  <div class="bisect-commits" id="bisectCommits"></div>
+
+  <div style="margin-top:12px;display:flex;gap:8px;">
+    <button class="cmd-btn" id="bisectGood" onclick="bisectMark('good')" style="padding:8px 16px;color:var(--green);border-color:var(--green);" disabled>Mark Good</button>
+    <button class="cmd-btn" id="bisectBad" onclick="bisectMark('bad')" style="padding:8px 16px;color:var(--red);border-color:var(--red);" disabled>Mark Bad</button>
+    <button class="cmd-btn" onclick="bisectReset()" style="padding:8px 16px;color:var(--text-dim);">Reset</button>
+  </div>
+
+  <div id="bisectFeedback" style="margin-top:12px;font-size:14px;min-height:24px;"></div>
+  <div id="bisectSteps" style="margin-top:8px;font-size:12px;color:var(--text-dim);"></div>
+</div>
+
+<!-- ===== SLIDE 15: CI/CD (Pipeline Stages) ===== -->
+<div class="slide" id="s15">
+  <h2>15. CI/CD &mdash; The Automation Layer</h2>
+  <p><strong>CI/CD</strong> stands for <strong>Continuous Integration / Continuous Deployment</strong>. In plain terms: it's an automatic system that tests and publishes your code every time you push changes. You don't run tests manually &mdash; the system does it for you, automatically, every time. GitHub's CI/CD system is called <strong>GitHub Actions</strong>.</p>
+
+  <div class="box analogy">
+    <div class="box-label">Analogy</div>
+    CI/CD is a <strong>diligent robot coworker</strong> who, every time you push code, immediately sets up a clean computer, installs everything, runs all tests, and reports back. In 2 minutes. Every single time.
+  </div>
+
+  <h3>Click each stage to see what happens:</h3>
+  <div class="pipeline" id="pipelineStages">
+    <div class="pipe-stage" onclick="pipeStage(0)" id="pipe-0">
+      <div class="pipe-label">Trigger</div>
+      <div class="pipe-name">Push / PR</div>
+      <div class="pipe-detail">You push code. GitHub automatically detects this and starts the pipeline.</div>
+    </div>
+    <div class="pipe-stage" onclick="pipeStage(1)" id="pipe-1">
+      <div class="pipe-label">Setup</div>
+      <div class="pipe-name">Clean Computer</div>
+      <div class="pipe-detail">A brand new virtual computer starts up in the cloud. It's a fresh, empty machine. Your code is downloaded onto it and all required libraries are installed.</div>
+    </div>
+    <div class="pipe-stage" onclick="pipeStage(2)" id="pipe-2">
+      <div class="pipe-label">Test</div>
+      <div class="pipe-name">Run Tests</div>
+      <div class="pipe-detail">Automated tests check that your code works correctly. "Linting" checks for style and formatting issues (like a spell-checker for code). If ANY test fails, the pipeline stops and tells you what broke.</div>
+    </div>
+    <div class="pipe-stage" onclick="pipeStage(3)" id="pipe-3">
+      <div class="pipe-label">Build</div>
+      <div class="pipe-name">Build App</div>
+      <div class="pipe-detail">Your code is compiled and packaged into a form ready to deploy (put on a real server). This packaged version is called the "build" &mdash; the final product ready to ship.</div>
+    </div>
+    <div class="pipe-stage" onclick="pipeStage(4)" id="pipe-4">
+      <div class="pipe-label">Deploy</div>
+      <div class="pipe-name">Ship It</div>
+      <div class="pipe-detail">The build is published to the live server so real users see it. This only happens on the main branch, and only if all tests pass. Fully automated.</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:20px;">The config file</h3>
+  <p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">This is written in <strong style="color:var(--text);">YAML</strong> &mdash; a simple format for configuration files that uses indentation and colons (like a structured to-do list). It lives in your project at <code>.github/workflows/</code>.</p>
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot r"></div><div class="terminal-dot y"></div><div class="terminal-dot g"></div>
+      <span style="margin-left:10px;font-size:11px;color:var(--text-dim);">.github/workflows/ci.yml</span>
+    </div>
+    <div class="terminal-body" style="font-size:12px;line-height:1.6;">
+      <div><span class="t-acc">name:</span> CI Pipeline</div>
+      <div><span class="t-acc">on:</span> [push, pull_request] <span class="t-out"># When to run: on every push or PR</span></div>
+      <div><span class="t-acc">jobs:</span></div>
+      <div>&nbsp;&nbsp;<span class="t-acc">test:</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-acc">runs-on:</span> ubuntu-latest <span class="t-out"># Use a Linux virtual machine</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-acc">steps:</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="t-acc">uses:</span> actions/checkout@v4 <span class="t-out"># Download the code</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="t-acc">run:</span> npm install <span class="t-out"># Install libraries</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="t-acc">run:</span> npm test <span class="t-out"># Run the tests</span></div>
+      <div>&nbsp;&nbsp;<span class="t-acc">deploy:</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-acc">needs:</span> test <span class="t-out"># Only runs after tests pass</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-acc">if:</span> github.ref == 'refs/heads/main' <span class="t-out"># Only on main branch</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-acc">steps:</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="t-acc">run:</span> ./deploy.sh <span class="t-out"># Publish to live server</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 16: Speed Round ===== -->
+<div class="slide" id="s16">
+  <h2>16. Speed Round</h2>
+  <p>Test your knowledge under pressure. <strong>8 seconds per question.</strong></p>
+
+  <div style="text-align:center;margin:20px 0;">
+    <div class="speed-timer" id="speedTimer">8.0</div>
+    <div style="margin-top:8px;font-size:14px;" id="speedProgress">Question <span id="speedQNum">0</span> of 10</div>
+    <div style="margin-top:4px;font-size:20px;font-weight:700;" id="speedScore">Score: 0</div>
+  </div>
+
+  <div id="speedQuestion" style="font-size:18px;font-weight:600;text-align:center;margin:16px 0;min-height:28px;"></div>
+
+  <div class="speed-options" id="speedOptions"></div>
+
+  <div style="text-align:center;margin-top:16px;">
+    <button class="cmd-btn" id="speedStartBtn" onclick="startSpeed()" style="padding:12px 32px;font-size:16px;">Start Speed Round</button>
+  </div>
+
+  <div id="speedFinal" style="display:none;text-align:center;margin-top:20px;">
+    <div style="font-size:36px;font-weight:700;" id="speedFinalScore"></div>
+    <div style="color:var(--text-dim);margin-top:8px;" id="speedFinalMsg"></div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 17: Final Assessment ===== -->
+<div class="slide" id="s17">
+  <h2>17. Final Assessment</h2>
+  <p>Let's see how deeply this landed. No peeking!</p>
+
+  <div class="quiz" id="fq-1">
+    <div class="quiz-q">Q1: What does git store in each commit?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-1',this,false)">The diff since the last commit</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-1',this,true)">A complete snapshot of all files</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-1',this,false)">Only the modified files</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-1',this,false)">A compressed archive</button>
+    <div class="quiz-fb" id="fq-1-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-2">
+    <div class="quiz-q">Q2: What is a git branch, physically?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-2',this,false)">A copy of all files in a folder</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-2',this,true)">A small text file with a commit hash</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-2',this,false)">A compressed project snapshot</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-2',this,false)">A special commit type</button>
+    <div class="quiz-fb" id="fq-2-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-3">
+    <div class="quiz-q">Q3: What is the difference between git reset --hard and git revert?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-3',this,false)">They do the same thing</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-3',this,false)">Reset undoes changes, revert deletes the branch</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-3',this,true)">Reset erases the commit from history; revert keeps history and adds a new "undo" commit</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-3',this,false)">Reset is for local, revert is for remote</button>
+    <div class="quiz-fb" id="fq-3-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-4">
+    <div class="quiz-q">Q4: You accidentally ran git reset --hard. How can you recover?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-4',this,false)">You cannot &mdash; the commits are gone forever</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-4',this,false)">Re-clone from GitHub</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-4',this,true)">Use git reflog to find the lost commit hash, then git reset --hard to that hash</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-4',this,false)">Run git undo</button>
+    <div class="quiz-fb" id="fq-4-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-5">
+    <div class="quiz-q">Q5: What does git stash do?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">Permanently deletes uncommitted changes</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">Creates a new branch with your changes</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,true)">Saves uncommitted changes to a hidden stack so you can switch branches safely</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-5',this,false)">Commits your changes with a temporary message</button>
+    <div class="quiz-fb" id="fq-5-fb"></div>
+  </div>
+
+  <div class="quiz" id="fq-6">
+    <div class="quiz-q">Q6: Why does git push sometimes fail?</div>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">Internet is too slow</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,true)">The remote has commits you don't have &mdash; pull first</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">Files are too large</button>
+    <button class="quiz-opt" onclick="fqCheck('fq-6',this,false)">You forgot git add</button>
+    <div class="quiz-fb" id="fq-6-fb"></div>
+  </div>
+
+  <div id="fqResult" style="display:none;margin-top:20px;padding:20px;background:var(--bg2);border-radius:12px;border:1px solid var(--border);text-align:center;">
+    <div style="font-size:28px;font-weight:700;" id="fqScore"></div>
+    <div style="color:var(--text-dim);margin-top:8px;" id="fqMsg"></div>
+  </div>
+</div>
+
+</div><!-- end slide-container -->
+
+<script>
+// === State ===
+const TOTAL = 18;
+let cur = 0, visited = new Set([0]), score = 0;
+
+// === Navigation ===
+function buildNav() {
+  const nav = document.getElementById('navProgress');
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    nav.appendChild(d);
+  }
+}
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('s' + n);
+  if (el) el.classList.add('active');
+  visited.add(cur); cur = n; visited.add(n);
+  document.querySelectorAll('.nav-dot').forEach((d, i) => {
+    d.className = 'nav-dot';
+    if (i === n) d.classList.add('active');
+    else if (visited.has(i)) d.classList.add('visited');
+  });
+  document.getElementById('prevBtn').disabled = n === 0;
+  document.getElementById('nextBtn').disabled = n === TOTAL - 1;
+  document.getElementById('progressFill').style.width = (n / (TOTAL - 1) * 100) + '%';
+  document.getElementById('slideContainer').scrollTop = 0;
+}
+
+function navigate(dir) { goTo(cur + dir); }
+
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight') navigate(1);
+  if (e.key === 'ArrowLeft') navigate(-1);
+});
+
+function addScore(n) { score += (n || 1); document.getElementById('scoreDisplay').textContent = score; }
+
+// === Slide 1: Film Strip ===
+const filmData = [
+  { hash: 'a1b2c3', msg: 'Initial project setup', files: [
+    { name: 'README.md', status: 'new' }, { name: 'index.html', status: 'new' }
+  ]},
+  { hash: 'd4e5f6', msg: 'Add login page', files: [
+    { name: 'README.md', status: '' }, { name: 'index.html', status: '' }, { name: 'login.py', status: 'new' }
+  ]},
+  { hash: 'g7h8i9', msg: 'Fix login validation', files: [
+    { name: 'README.md', status: '' }, { name: 'index.html', status: '' }, { name: 'login.py', status: 'changed' }
+  ]},
+  { hash: 'j1k2l3', msg: 'Add user dashboard', files: [
+    { name: 'README.md', status: '' }, { name: 'index.html', status: 'changed' }, { name: 'login.py', status: '' }, { name: 'dashboard.py', status: 'new' }
+  ]},
+  { hash: 'm4n5o6', msg: 'Update README with docs', files: [
+    { name: 'README.md', status: 'changed' }, { name: 'index.html', status: '' }, { name: 'login.py', status: '' }, { name: 'dashboard.py', status: '' }
+  ]},
+];
+
+function buildFilmStrip() {
+  const strip = document.getElementById('filmStrip');
+  filmData.forEach((c, i) => {
+    const f = document.createElement('div');
+    f.className = 'film-frame' + (i === 0 ? ' active' : '');
+    f.id = 'frame-' + i;
+    let filesHtml = c.files.map(fl =>
+      '<div class="' + (fl.status || '') + '">' + (fl.status === 'new' ? '+ ' : fl.status === 'changed' ? '~ ' : '  ') + fl.name + '</div>'
+    ).join('');
+    f.innerHTML = '<div class="frame-label">Commit ' + (i + 1) + '</div><div style="font-family:monospace;font-size:10px;color:var(--text-dim);margin-bottom:4px;">' + c.hash.substring(0, 7) + '</div><div class="frame-files">' + filesHtml + '</div>';
+    strip.appendChild(f);
+  });
+}
+
+function scrubFilm(val) {
+  const i = parseInt(val);
+  document.querySelectorAll('.film-frame').forEach((f, idx) => {
+    f.classList.toggle('active', idx === i);
+  });
+  document.getElementById('filmLabel').textContent = 'Commit ' + (i + 1) + ' of 5: "' + filmData[i].msg + '"';
+  if (!scrubFilm.scored) { scrubFilm.scored = true; addScore(); }
+}
+
+// === Slide 2: Drag & Drop Three Areas ===
+let dzState = { 'login.py': 'working', 'utils.py': 'working', 'README.md': 'working' };
+let draggedFile = null;
+
+function dzStart(e) {
+  draggedFile = e.target.dataset.file;
+  e.dataTransfer.setData('text/plain', draggedFile);
+  e.target.style.opacity = '0.5';
+}
+function dzOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dzLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function dzDrop(e, zone) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedFile) return;
+  const fb = document.getElementById('dzFeedback');
+  const currentZone = dzState[draggedFile];
+
+  // Enforce correct flow: working -> staging -> repo
+  const el = document.querySelector('.draggable-file[data-file="' + draggedFile + '"]');
+  if (zone === 'staging' && currentZone === 'working') {
+    dzState[draggedFile] = 'staging';
+    el.className = 'draggable-file in-staging';
+    document.getElementById('staging-files').appendChild(el);
+    fb.innerHTML = '<span style="color:var(--cyan);">git add ' + draggedFile + '</span> &mdash; moved to staging area. Now drag it to the repository to commit.';
+    addScore();
+  } else if (zone === 'repo' && currentZone === 'staging') {
+    dzState[draggedFile] = 'repo';
+    el.className = 'draggable-file in-repo';
+    el.draggable = false;
+    el.style.cursor = 'default';
+    document.getElementById('repo-files').appendChild(el);
+    fb.innerHTML = '<span style="color:var(--green);">git commit</span> &mdash; ' + draggedFile + ' is now permanently saved in the repository!';
+    addScore();
+  } else if (zone === 'repo' && currentZone === 'working') {
+    fb.innerHTML = '<span style="color:var(--red);">You must stage files first!</span> Drag to Staging Area before committing. Git requires this two-step process.';
+  } else if (zone === 'working' && currentZone !== 'working') {
+    fb.innerHTML = '<span style="color:var(--text-dim);">Once staged or committed, files stay there. In real git, you can unstage with <code>git reset</code>.</span>';
+  } else {
+    fb.innerHTML = '<span class="dim">File is already in that zone.</span>';
+  }
+  const src = document.querySelector('.draggable-file[style*="opacity"]');
+  if (src) src.style.opacity = '1';
+  draggedFile = null;
+}
+
+// === Slide 3: Object Model Build ===
+let objState = -1;
+const objSteps = [
+  {
+    html: '<span style="color:var(--ember);">blob e7a1f2</span> = login.py<br><span style="color:var(--ember);">blob b3c4d5</span> = utils.py<br><span style="color:var(--ember);">blob f6g7h8</span> = README.md',
+    explain: 'Each file gets stored as a <strong>blob</strong> (short for "binary large object" &mdash; just a fancy name for a chunk of data). Git gives each blob a unique ID like <code>e7a1f2</code>, computed from the file\'s contents. If two files are identical, they share the same ID and git only stores one copy.'
+  },
+  {
+    html: '<span style="color:var(--ember);">blob e7a1f2</span> = login.py<br><span style="color:var(--ember);">blob b3c4d5</span> = utils.py<br><span style="color:var(--ember);">blob f6g7h8</span> = README.md<br><br><span style="color:var(--cyan);">tree d9e0f1</span>:<br>&nbsp;&nbsp;login.py &rarr; blob e7a1f2<br>&nbsp;&nbsp;utils.py &rarr; blob b3c4d5<br>&nbsp;&nbsp;README.md &rarr; blob f6g7h8',
+    explain: '<strong>Trees</strong> are like a table of contents. They list which filenames point to which blobs (file contents). If you have folders inside folders, trees can point to other trees. This is how git connects file names to their stored data.'
+  },
+  {
+    html: '<span style="color:var(--text-dim);">blobs: login.py, utils.py, README.md</span><br><span style="color:var(--text-dim);">tree d9e0f1: login.py, utils.py, README.md</span><br><br><span style="color:var(--green);">commit a1b2c3:</span><br>&nbsp;&nbsp;<span style="color:var(--cyan);">tree</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d9e0f1a3b7c8e2f4a1d0b5c9e3f7a2d6<br>&nbsp;&nbsp;<span style="color:var(--cyan);">parent</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">(none &mdash; this is the first commit)</span><br>&nbsp;&nbsp;<span style="color:var(--cyan);">author</span>&nbsp;&nbsp;&nbsp;&nbsp;Mike &lt;mike@email.com&gt; Sun Feb 16 10:32:14 2026 -0800<br>&nbsp;&nbsp;<span style="color:var(--cyan);">committer</span>&nbsp;Mike &lt;mike@email.com&gt; Sun Feb 16 10:32:14 2026 -0800<br>&nbsp;&nbsp;<span style="color:var(--cyan);">message</span>&nbsp;&nbsp;&nbsp;<span style="color:#fff;">Initial commit</span>',
+    explain: 'This is exactly what a <strong>commit</strong> looks like inside git. It contains: the <strong>tree</strong> (which files were in the project), the <strong>parent</strong> (which commit came before this one &mdash; none for the first commit), the <strong>author</strong> (who wrote the code), the <strong>committer</strong> (who actually made the commit &mdash; usually the same person), the <strong>date</strong>, and your <strong>commit message</strong>. This chain of parent links &mdash; each commit pointing to the one before it &mdash; IS your project\'s history.'
+  },
+  {
+    html: '<span style="color:var(--ember);">blob e7a1f2</span> = login.py<br><span style="color:var(--ember);">blob b3c4d5</span> = utils.py<br><span style="color:var(--ember);">blob f6g7h8</span> = README.md<br><br><span style="color:var(--cyan);">tree d9e0f1</span>: login.py, utils.py, README.md<br><br><span style="color:var(--green);">commit a1b2c3</span>: tree d9e0f1, "Initial commit"<br><br><span style="color:var(--purple);">tag v1.0</span> &rarr; commit a1b2c3',
+    explain: '<strong>Tags</strong> are labels you stick on a commit to give it a meaningful name, like "v1.0" (version 1.0). Unlike branches, tags never move &mdash; they permanently mark a point in history. <strong>4 types of objects, that is it.</strong> Everything in git is built from blobs (file contents), trees (directories), commits (snapshots), and tags (version labels).'
+  },
+  {
+    html: '<span style="color:var(--cyan);">.git/</span><br>&nbsp;&nbsp;<span style="color:var(--gold);">HEAD</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">"ref: refs/heads/main"</span><br>&nbsp;&nbsp;<span style="color:var(--text-dim);">config</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">repo settings</span><br>&nbsp;&nbsp;<span style="color:var(--text-dim);">index</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">the staging area</span><br><br>&nbsp;&nbsp;<span style="color:var(--ember);">objects/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">ALL data lives here</span><br>&nbsp;&nbsp;&nbsp;&nbsp;a1/b2c3d4e5...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">could be a blob, tree, commit, or tag</span><br>&nbsp;&nbsp;&nbsp;&nbsp;d9/e0f1a3b7...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">another object</span><br>&nbsp;&nbsp;&nbsp;&nbsp;e7/a1f2d9b3...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">another object</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">pack/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">packed objects (optimization for large repos)</span><br><br>&nbsp;&nbsp;<span style="color:var(--green);">refs/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">named entry points &mdash; how git finds things</span><br>&nbsp;&nbsp;&nbsp;&nbsp;heads/<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--green);">main</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">"a1b2c3d4e5f6..." (a commit hash)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--ember);">feature</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">"f7e6d5c4b3a2..." (a commit hash)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;tags/<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--purple);">v1.0</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">"a1b2c3d4e5f6..." (a commit hash)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;remotes/origin/<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">main</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">"a1b2c3d4e5f6..."</span><br><br>&nbsp;&nbsp;<span style="color:var(--text-dim);">logs/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim);">the reflog (safety log of every action)</span>',
+    explain: 'This is the actual folder structure inside <code>.git/</code>. Two key areas: <strong style="color:var(--ember);">objects/</strong> is a big pile of hashed files &mdash; blobs, trees, commits, and tags all mixed together. Git does NOT scan through them to find things. Instead, it uses <strong style="color:var(--green);">refs/</strong> &mdash; tiny text files that store a known commit hash. Each branch is just a file containing one hash. <strong style="color:var(--gold);">HEAD</strong> tells git which branch you are currently on.'
+  },
+  {
+    html: '<span style="color:var(--text-dim);">Step 1:</span> Read <span style="color:var(--gold);">HEAD</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&rarr; <span style="color:var(--text-dim);">"ref: refs/heads/main"</span><br><br><span style="color:var(--text-dim);">Step 2:</span> Read <span style="color:var(--green);">refs/heads/main</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&rarr; <span style="color:var(--green);">a1b2c3</span> <span style="color:var(--text-dim);">(a commit hash)</span><br><br><span style="color:var(--text-dim);">Step 3:</span> Open <span style="color:var(--green);">commit a1b2c3</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&rarr; tree: d9e0f1, parent: 7f8g9h, message: "Fix login"<br><br><span style="color:var(--text-dim);">Step 4:</span> Follow parent &rarr; open <span style="color:var(--green);">commit 7f8g9h</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&rarr; tree: b4c5d6, parent: e2f3a4, message: "Add auth"<br><br><span style="color:var(--text-dim);">Step 5:</span> Follow parent &rarr; open <span style="color:var(--green);">commit e2f3a4</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&rarr; tree: c7d8e9, parent: <span style="color:var(--text-dim);">(none)</span>, message: "Initial commit"<br><br><span style="color:var(--text-dim);">Step 6:</span> No parent &rarr; <span style="color:var(--cyan);">end of history</span><br><br><span style="color:var(--text-dim);">To see files at any commit:</span> open its <span style="color:var(--cyan);">tree</span> &rarr; lists filenames &rarr; each points to a <span style="color:var(--ember);">blob</span> &rarr; decompress &rarr; original file contents',
+    explain: 'This is how <code>git log</code> actually works. Git never scans all objects. It starts from a <strong>known entry point</strong> (HEAD &rarr; branch &rarr; commit hash) and follows the chain of parent links. Each commit points to the previous one, forming a linked list. To reconstruct your files at any point, git reads that commit\'s tree, which maps filenames to blobs. <strong>Everything is just pointers following pointers.</strong>'
+  }
+];
+
+function objStep(step) {
+  if (step !== objState + 1) return;
+  objState = step;
+  document.getElementById('obj-' + step).classList.add('done');
+  if (step < 5) document.getElementById('obj-' + (step + 1)).disabled = false;
+  document.getElementById('objContent').innerHTML = objSteps[step].html;
+  document.getElementById('objExplain').innerHTML = '<p>' + objSteps[step].explain + '</p>';
+  addScore();
+}
+
+// === Slide 4: Terminal Sandbox ===
+let termState = { initialized: false, files: {}, staged: [], commits: [], branch: 'main', branches: ['main'], head: 'main' };
+
+document.getElementById('termInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const cmd = this.value.trim();
+    if (!cmd) return;
+    this.value = '';
+    processTermCmd(cmd);
+  }
+});
+
+function termOutput(lines) {
+  const body = document.getElementById('termBody');
+  const inputLine = body.querySelector('.terminal-input-line');
+  lines.forEach(l => {
+    const div = document.createElement('div');
+    div.innerHTML = l;
+    div.style.marginBottom = '2px';
+    body.insertBefore(div, inputLine);
+  });
+  body.scrollTop = body.scrollHeight;
+}
+
+function termEcho(cmd) {
+  const body = document.getElementById('termBody');
+  const inputLine = body.querySelector('.terminal-input-line');
+  const div = document.createElement('div');
+  div.innerHTML = '<span class="t-prompt">$ </span><span class="t-cmd">' + cmd + '</span>';
+  div.style.marginBottom = '2px';
+  body.insertBefore(div, inputLine);
+}
+
+function processTermCmd(cmd) {
+  termEcho(cmd);
+  const parts = cmd.split(/\s+/);
+  const hint = document.getElementById('termHintText');
+
+  if (cmd === 'git init') {
+    if (termState.initialized) { termOutput(['<span class="t-err">Reinitialized existing Git repository</span>']); return; }
+    termState.initialized = true;
+    termState.files = { 'login.py': 'untracked', 'utils.py': 'untracked', 'README.md': 'untracked' };
+    termOutput(['<span class="t-grn">Initialized empty Git repository in ~/my-project/.git/</span>']);
+    hint.innerHTML = 'Now try <code>git status</code> to see the state of your repo.';
+    addScore();
+  } else if (cmd === 'git status') {
+    if (!termState.initialized) { termOutput(['<span class="t-err">fatal: not a git repository</span>']); return; }
+    let out = ['<span class="t-grn">On branch ' + termState.branch + '</span>'];
+    const untracked = Object.entries(termState.files).filter(([,s]) => s === 'untracked');
+    const staged = Object.entries(termState.files).filter(([,s]) => s === 'staged');
+    const modified = Object.entries(termState.files).filter(([,s]) => s === 'modified');
+    if (termState.commits.length === 0 && staged.length === 0) out.push('<span class="t-out">No commits yet</span>');
+    if (staged.length > 0) {
+      out.push('<span class="t-out">Changes to be committed:</span>');
+      staged.forEach(([f]) => out.push('&nbsp;&nbsp;<span class="t-grn">new file: ' + f + '</span>'));
+    }
+    if (modified.length > 0) {
+      out.push('<span class="t-out">Changes not staged for commit:</span>');
+      modified.forEach(([f]) => out.push('&nbsp;&nbsp;<span class="t-hi">modified: ' + f + '</span>'));
+    }
+    if (untracked.length > 0) {
+      out.push('<span class="t-out">Untracked files:</span>');
+      untracked.forEach(([f]) => out.push('&nbsp;&nbsp;<span class="t-err">' + f + '</span>'));
+    }
+    if (untracked.length === 0 && staged.length === 0 && modified.length === 0) {
+      out.push('<span class="t-grn">nothing to commit, working tree clean</span>');
+    }
+    termOutput(out);
+    addScore();
+  } else if (parts[0] === 'git' && parts[1] === 'add') {
+    if (!termState.initialized) { termOutput(['<span class="t-err">fatal: not a git repository</span>']); return; }
+    const file = parts[2];
+    if (!file) { termOutput(['<span class="t-err">Nothing specified, nothing added.</span>']); return; }
+    if (file === '.' || file === '-A') {
+      Object.keys(termState.files).forEach(f => { if (termState.files[f] === 'untracked' || termState.files[f] === 'modified') termState.files[f] = 'staged'; });
+      termOutput(['<span class="t-out">Added all files to staging area.</span>']);
+    } else if (termState.files[file]) {
+      termState.files[file] = 'staged';
+      termOutput(['<span class="t-out">Added ' + file + ' to staging area.</span>']);
+    } else {
+      termOutput(['<span class="t-err">fatal: pathspec \'' + file + '\' did not match any files</span>']);
+      return;
+    }
+    hint.innerHTML = 'Staged! Now try <code>git commit -m "your message"</code>';
+    addScore();
+  } else if (parts[0] === 'git' && parts[1] === 'commit') {
+    if (!termState.initialized) { termOutput(['<span class="t-err">fatal: not a git repository</span>']); return; }
+    const staged = Object.entries(termState.files).filter(([,s]) => s === 'staged');
+    if (staged.length === 0) { termOutput(['<span class="t-err">nothing to commit (use "git add" first)</span>']); return; }
+    const msgMatch = cmd.match(/-m\s+"([^"]+)"/);
+    const msg = msgMatch ? msgMatch[1] : 'unnamed commit';
+    const hash = Math.random().toString(36).substring(2, 9);
+    staged.forEach(([f]) => { termState.files[f] = 'committed'; });
+    termState.commits.push({ hash: hash, msg: msg, files: staged.map(([f]) => f) });
+    termOutput([
+      '<span class="t-grn">[' + termState.branch + ' ' + hash + '] ' + msg + '</span>',
+      '<span class="t-out"> ' + staged.length + ' file(s) changed</span>'
+    ]);
+    hint.innerHTML = 'Committed! Try <code>git log</code> to see your history.';
+    addScore();
+  } else if (cmd === 'git log') {
+    if (!termState.initialized) { termOutput(['<span class="t-err">fatal: not a git repository</span>']); return; }
+    if (termState.commits.length === 0) { termOutput(['<span class="t-out">No commits yet.</span>']); return; }
+    let out = [];
+    [...termState.commits].reverse().forEach(c => {
+      out.push('<span class="t-hi">commit ' + c.hash + '</span>');
+      out.push('<span class="t-out">  ' + c.msg + '</span>');
+      out.push('');
+    });
+    termOutput(out);
+    addScore();
+  } else if (parts[0] === 'git' && parts[1] === 'branch') {
+    if (!termState.initialized) { termOutput(['<span class="t-err">fatal: not a git repository</span>']); return; }
+    if (parts.length === 2) {
+      termOutput(termState.branches.map(b => b === termState.branch ? '<span class="t-grn">* ' + b + '</span>' : '<span class="t-out">  ' + b + '</span>'));
+    } else {
+      const name = parts[2];
+      if (termState.branches.includes(name)) { termOutput(['<span class="t-err">fatal: branch \'' + name + '\' already exists</span>']); return; }
+      termState.branches.push(name);
+      termOutput(['<span class="t-out">Created branch ' + name + '</span>']);
+      hint.innerHTML = 'Branch created! Try <code>git checkout ' + name + '</code>';
+      addScore();
+    }
+  } else if (parts[0] === 'git' && parts[1] === 'checkout') {
+    if (!termState.initialized) { termOutput(['<span class="t-err">fatal: not a git repository</span>']); return; }
+    let name = parts[2];
+    if (parts[2] === '-b' && parts[3]) {
+      name = parts[3];
+      if (!termState.branches.includes(name)) termState.branches.push(name);
+    }
+    if (!termState.branches.includes(name)) { termOutput(['<span class="t-err">error: pathspec \'' + name + '\' did not match any known branch</span>']); return; }
+    termState.branch = name;
+    termOutput(['<span class="t-out">Switched to branch \'' + name + '\'</span>']);
+    hint.innerHTML = 'You are now on branch <code>' + name + '</code>. Any commits go here.';
+    addScore();
+  } else if (cmd === 'git diff') {
+    termOutput(['<span class="t-out">No changes to show (simulated environment)</span>']);
+  } else if (cmd === 'help') {
+    termOutput([
+      '<span class="t-acc">Available commands:</span>',
+      '<span class="t-out">  git init, git status, git add &lt;file&gt;, git add .</span>',
+      '<span class="t-out">  git commit -m "msg", git log</span>',
+      '<span class="t-out">  git branch, git branch &lt;name&gt;</span>',
+      '<span class="t-out">  git checkout &lt;name&gt;, git checkout -b &lt;name&gt;</span>',
+    ]);
+  } else {
+    termOutput(['<span class="t-err">Command not recognized. Type "help" for available commands.</span>']);
+  }
+}
+
+// === Slide 5: Branches ===
+let brState = -1;
+
+function drawBranch(state) {
+  const svg = document.getElementById('branchSvg');
+  let h = '';
+  const c = { main: '#7eb8a0', feat: '#ff6b35', head: '#00f5ff' };
+  const y = { main: 80, feat: 140 };
+  const nodes = [
+    { id: 'A', x: 120, y: y.main },
+    { id: 'B', x: 240, y: y.main },
+    { id: 'C', x: 360, y: y.main },
+  ];
+  if (state >= 2) nodes.push({ id: 'D', x: 480, y: y.feat, br: 'feat' });
+  if (state >= 3) nodes.push({ id: 'F', x: 480, y: y.main, br: 'main2' });
+
+  // Lines
+  for (let i = 1; i < nodes.length; i++) {
+    const p = nodes[i - 1], n = nodes[i];
+    if (n.id === 'D') {
+      h += '<line x1="' + nodes[2].x + '" y1="' + nodes[2].y + '" x2="' + n.x + '" y2="' + n.y + '" stroke="' + c.feat + '" stroke-width="2" opacity="0.5"/>';
+    } else if (n.id === 'F') {
+      h += '<line x1="' + nodes[2].x + '" y1="' + nodes[2].y + '" x2="' + n.x + '" y2="' + n.y + '" stroke="' + c.main + '" stroke-width="2" opacity="0.5"/>';
+    } else {
+      h += '<line x1="' + p.x + '" y1="' + p.y + '" x2="' + n.x + '" y2="' + n.y + '" stroke="' + c.main + '" stroke-width="2" opacity="0.5"/>';
+    }
+  }
+  // Nodes
+  nodes.forEach(n => {
+    const col = n.br === 'feat' ? c.feat : c.main;
+    h += '<circle cx="' + n.x + '" cy="' + n.y + '" r="18" fill="' + col + '" opacity="0.2" stroke="' + col + '" stroke-width="2"/>';
+    h += '<text x="' + n.x + '" y="' + (n.y + 5) + '" text-anchor="middle" fill="white" font-family="SF Mono,monospace" font-size="14" font-weight="bold">' + n.id + '</text>';
+  });
+  // Labels
+  const mainX = state >= 3 ? 480 : 360;
+  h += '<text x="' + mainX + '" y="' + (y.main - 30) + '" text-anchor="middle" fill="' + c.main + '" font-family="SF Mono,monospace" font-size="12" font-weight="bold">main</text>';
+  if (state >= 1) {
+    const fx = state >= 2 ? 480 : 360;
+    const fy = state >= 2 ? y.feat : y.main;
+    h += '<text x="' + fx + '" y="' + (fy + 45) + '" text-anchor="middle" fill="' + c.feat + '" font-family="SF Mono,monospace" font-size="12" font-weight="bold">feature</text>';
+    if (state < 3) {
+      h += '<text x="' + (fx + 40) + '" y="' + (fy + 5) + '" fill="' + c.head + '" font-family="SF Mono,monospace" font-size="11">HEAD</text>';
+    }
+  }
+  svg.innerHTML = h;
+}
+
+function brStep(step) {
+  if (step !== brState + 1) return;
+  brState = step;
+  document.getElementById('br-' + step).classList.add('done');
+  if (step < 3) document.getElementById('br-' + (step + 1)).disabled = false;
+  drawBranch(step);
+  addScore();
+  const exp = document.getElementById('brExplain');
+  const msgs = [
+    'Three commits on main: A &rarr; B &rarr; C. The <strong style="color:#7eb8a0;">main</strong> branch points to the latest commit, C.',
+    '<code>git checkout -b feature</code> creates a new branch called "feature" starting at C. <strong style="color:#00f5ff;">HEAD</strong> now points to feature (meaning you are working on that branch). No files were copied &mdash; only a tiny label was created.',
+    'You made commit D on the feature branch. <strong style="color:#ff6b35;">feature</strong> now points to D. <strong style="color:#7eb8a0;">main</strong> still points to C. The two branches have <em>diverged</em> &mdash; they are going in different directions.',
+    'Someone committed F on main. Now main &rarr; F, feature &rarr; D. They share the common history (A&rarr;B&rarr;C) but each has its own latest work. To combine them, you would merge or rebase.'
+  ];
+  exp.innerHTML = '<p>' + msgs[step] + '</p>';
+}
+
+// === Slide 6: Merge Conflict Editor ===
+const conflictOriginal = document.getElementById('conflictEditor').value;
+
+function checkConflict() {
+  const val = document.getElementById('conflictEditor').value;
+  const fb = document.getElementById('conflictFeedback');
+  if (val.includes('<<<<<<<') || val.includes('=======') || val.includes('>>>>>>>')) {
+    fb.innerHTML = '<span style="color:var(--red);">Conflict markers still present!</span> Remove all lines with <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>, then keep the code you want.';
+    return;
+  }
+  if (val.trim().length < 20) {
+    fb.innerHTML = '<span style="color:var(--red);">The file seems too short.</span> You need to keep the valid code (remove markers, keep one or both versions).';
+    return;
+  }
+  if (val.includes('def authenticate') && val.includes('return result')) {
+    fb.innerHTML = '<span style="color:var(--green);">Conflict resolved!</span> In real git, you would now run <code>git add auth.py</code> and <code>git commit</code> to complete the merge.';
+    addScore(2);
+  } else {
+    fb.innerHTML = '<span style="color:var(--ember);">The code looks modified but might not be complete.</span> Make sure the function definition and return statement are intact.';
+  }
+}
+
+function resetConflict() {
+  document.getElementById('conflictEditor').value = conflictOriginal;
+  document.getElementById('conflictFeedback').innerHTML = '';
+}
+
+// === Slide 7: Rebase vs Merge Toggle ===
+function showRebaseView(mode) {
+  const art = document.getElementById('rebaseArt');
+  const cap = document.getElementById('rebaseCaption');
+  const exp = document.getElementById('rebaseExplain');
+  const mergeBtn = document.getElementById('rbMergeBtn');
+  const rebaseBtn = document.getElementById('rbRebaseBtn');
+
+  if (mode === 'merge') {
+    mergeBtn.style.borderColor = 'var(--green)';
+    mergeBtn.style.color = 'var(--green)';
+    rebaseBtn.style.borderColor = 'var(--border)';
+    rebaseBtn.style.color = 'var(--cyan)';
+    art.innerHTML = '<span style="color:var(--green);">main</span>:    <span style="color:var(--text-dim);">A \u2014 B \u2014 C \u2014\u2014\u2014 F \u2014</span> <span style="color:var(--cyan);">G</span> <span class="dim">(merge commit)</span>\n                    <span style="color:var(--text-dim);">\\          /</span>\n<span style="color:var(--ember);">feature</span>:          <span style="color:var(--text-dim);">D \u2014 E</span>';
+    cap.textContent = 'Merge creates commit G with TWO parents. History shows the branch existed.';
+    exp.innerHTML = '<p>The merge commit <strong>G</strong> ties both histories together. Nothing is rewritten &mdash; D and E keep their original hashes. This is the <strong>safe</strong> option.</p>';
+  } else {
+    rebaseBtn.style.borderColor = 'var(--ember)';
+    rebaseBtn.style.color = 'var(--ember)';
+    mergeBtn.style.borderColor = 'var(--border)';
+    mergeBtn.style.color = 'var(--cyan)';
+    art.innerHTML = '<span class="dim">Before:</span>  <span style="color:var(--text-dim);">A \u2014 B \u2014 C \u2014 F</span>  <span style="color:var(--green);">(main)</span>\n                    <span style="color:var(--text-dim);">\\</span>\n                     <span style="color:var(--text-dim);">D \u2014 E</span>  <span style="color:var(--ember);">(feature)</span>\n\n<span class="dim">After:</span>   <span style="color:var(--text-dim);">A \u2014 B \u2014 C \u2014 F \u2014</span> <span style="color:var(--cyan);">D\' \u2014 E\'</span>  <span style="color:var(--ember);">(feature)</span>';
+    cap.textContent = 'Rebase REPLAYS your commits on top of main. D\' and E\' are NEW commits (same changes, new hashes).';
+    exp.innerHTML = '<p>D and E are <strong>recreated</strong> as D\' and E\' &mdash; same changes, but placed after F instead of after C. Since their position in history changed, they get new IDs (hashes). The originals still exist in git\'s safety log (reflog) but are no longer visible. This gives <strong>clean linear history</strong> but changes the commit IDs, which can confuse teammates if they had the old versions.</p>';
+  }
+  if (!showRebaseView.scored) { showRebaseView.scored = true; addScore(); }
+}
+showRebaseView('merge');
+
+function revealCard(el) {
+  if (!el.classList.contains('revealed')) {
+    el.classList.add('revealed');
+    addScore();
+  }
+}
+
+// === Slide 8: Reset vs Revert Consequences ===
+function showUndo(mode) {
+  const grid = document.getElementById('undoGrid');
+  grid.querySelectorAll('.consequence-card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const result = document.getElementById('undoResult');
+  const content = document.getElementById('undoContent');
+  result.classList.add('show');
+
+  const data = {
+    soft: {
+      history: '<span style="color:var(--green);">A &rarr; B</span> <span class="dim">(C removed from history)</span>',
+      staging: '<span style="color:var(--cyan);">C\'s changes are staged</span> (ready to re-commit)',
+      working: '<span style="color:var(--green);">Unchanged</span> (your files look the same)',
+      danger: '<span style="color:var(--ember);">Rewrites history</span> &mdash; never use on branches other people are also working on',
+      use: 'You want to redo the commit message or rearrange your changes'
+    },
+    hard: {
+      history: '<span style="color:var(--green);">A &rarr; B</span> <span class="dim">(C removed from history)</span>',
+      staging: '<span style="color:var(--red);">Empty</span> (cleared)',
+      working: '<span style="color:var(--red);">Reverted to B</span> (C\'s file changes are GONE)',
+      danger: '<span style="color:var(--red);">DESTRUCTIVE</span> &mdash; your file changes are erased (recoverable via reflog, git\'s safety log)',
+      use: 'You want to completely erase a commit and all its file changes'
+    },
+    revert: {
+      history: '<span style="color:var(--green);">A &rarr; B &rarr; C &rarr; D</span> <span class="dim">(D undoes C)</span>',
+      staging: '<span style="color:var(--green);">Clean</span> (auto-committed)',
+      working: '<span style="color:var(--green);">C\'s changes are undone</span> (files match B)',
+      danger: '<span style="color:var(--green);">SAFE</span> &mdash; history is preserved, a new "undo" commit is added on top',
+      use: 'You want to undo changes on a branch that other people are also using'
+    }
+  };
+
+  const d = data[mode];
+  content.innerHTML = '<div class="cr-row"><span class="cr-label">History becomes</span><span>' + d.history + '</span></div>' +
+    '<div class="cr-row"><span class="cr-label">Staging area</span><span>' + d.staging + '</span></div>' +
+    '<div class="cr-row"><span class="cr-label">Working directory</span><span>' + d.working + '</span></div>' +
+    '<div class="cr-row"><span class="cr-label">Danger level</span><span>' + d.danger + '</span></div>' +
+    '<div class="cr-row"><span class="cr-label">Best for</span><span>' + d.use + '</span></div>';
+  if (!showUndo.scored) { showUndo.scored = true; addScore(); }
+}
+
+// === Slide 9: Reflog Recovery ===
+function checkReflog(btn, choice) {
+  const fb = document.getElementById('reflogFeedback');
+  const btns = btn.parentElement.querySelectorAll('.cmd-btn');
+  btns.forEach(b => b.disabled = true);
+
+  if (choice === 1) {
+    btn.classList.add('done');
+    fb.innerHTML = '<span style="color:var(--green);">Correct!</span> <code>git reset --hard HEAD@{1}</code> (e7d4f9a) restores HEAD to the "Add payment processing" commit, which was the most recent before the accidental reset. Commit E is recovered, and D is in its history. <strong>The reflog saved you.</strong>';
+    addScore(2);
+  } else {
+    btn.style.borderColor = 'var(--red)';
+    btn.style.color = 'var(--red)';
+    if (choice === 0) {
+      fb.innerHTML = '<span style="color:var(--red);">That is where HEAD is NOW</span> (after the bad reset). You need to go back to before the reset.';
+    } else if (choice === 2) {
+      fb.innerHTML = '<span style="color:var(--red);">Close!</span> HEAD@{2} is the "Fix auth validation" commit (D), but you would lose commit E. You want HEAD@{1} which includes BOTH lost commits.';
+    } else {
+      fb.innerHTML = '<span style="color:var(--red);">That is commit C</span> &mdash; the same place the bad reset sent you. Look for the entry BEFORE the reset.';
+    }
+  }
+}
+
+// === Slide 10: Stash Flow ===
+let stashState = -1;
+
+function stashStep(step) {
+  if (step > stashState + 1) return;
+  if (step <= stashState) {
+    const d = document.getElementById('stash-detail-' + step);
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  stashState = step;
+  document.getElementById('stash-num-' + step).classList.add('active');
+  document.getElementById('stash-detail-' + step).style.display = 'block';
+  if (step > 0) {
+    document.getElementById('stash-num-' + (step - 1)).classList.remove('active');
+    document.getElementById('stash-num-' + (step - 1)).classList.add('done');
+  }
+  addScore();
+}
+
+// === Slide 11: Remote Sync ===
+let remState = -1;
+
+function remStep(step) {
+  if (step !== remState + 1) return;
+  remState = step;
+  document.getElementById('rem-' + step).classList.add('done');
+  if (step < 3) document.getElementById('rem-' + (step + 1)).disabled = false;
+  addScore();
+
+  const loc = document.getElementById('rem-local-state');
+  const rem = document.getElementById('rem-remote-state');
+  const exp = document.getElementById('remExplain');
+  const locBox = document.getElementById('rem-local');
+  const remBox = document.getElementById('rem-remote');
+
+  if (step === 0) {
+    loc.innerHTML = '<span style="color:var(--green);">main: A&mdash;B&mdash;C&mdash;<strong>D</strong></span>';
+    locBox.classList.add('hl');
+    exp.innerHTML = '<p>Committed D locally. Your laptop is <strong>ahead</strong> of GitHub.</p>';
+  } else if (step === 1) {
+    rem.innerHTML = '<span style="color:var(--green);">main: A&mdash;B&mdash;C&mdash;<strong>D</strong></span>';
+    locBox.classList.remove('hl');
+    remBox.classList.add('hl');
+    document.getElementById('rem-push-arrow').innerHTML = '<span style="color:var(--cyan);">&rarr; push &rarr;</span>';
+    setTimeout(() => remBox.classList.remove('hl'), 1000);
+    exp.innerHTML = '<p><code>git push</code> sent D to GitHub. Both copies are in sync.</p>';
+  } else if (step === 2) {
+    rem.innerHTML = '<span style="color:var(--green);">main: A&mdash;B&mdash;C&mdash;D&mdash;<strong>E</strong></span>';
+    remBox.classList.add('hl');
+    exp.innerHTML = '<p>A teammate pushed E. GitHub is <strong>ahead</strong>. If you push now, git will reject it.</p>';
+  } else if (step === 3) {
+    loc.innerHTML = '<span style="color:var(--green);">main: A&mdash;B&mdash;C&mdash;D&mdash;<strong>E</strong></span>';
+    locBox.classList.add('hl');
+    remBox.classList.remove('hl');
+    document.getElementById('rem-pull-arrow').innerHTML = '<span style="color:var(--green);">&larr; pull &larr;</span>';
+    setTimeout(() => locBox.classList.remove('hl'), 1000);
+    exp.innerHTML = '<p><code>git pull</code> downloaded E. Back in sync. This is the rhythm: <strong>commit &rarr; push &rarr; pull &rarr; repeat</strong>.</p>';
+  }
+}
+
+// === Slide 12: .gitignore Pattern Matching ===
+const ignoreAllFiles = [
+  'app.js', 'index.html', 'style.css', '.env', '.env.local',
+  'node_modules/', '.DS_Store', 'package.json', 'dist/',
+  'src/login.py', 'debug.log', 'error.log', '.gitignore'
+];
+const shouldIgnore = new Set(['.env', '.env.local', 'node_modules/', '.DS_Store', 'debug.log', 'error.log']);
+let ignorePatterns = [];
+
+function buildIgnoreFiles() {
+  const container = document.getElementById('ignoreFiles');
+  container.innerHTML = '';
+  ignoreAllFiles.forEach(f => {
+    const chip = document.createElement('span');
+    chip.className = 'file-chip';
+    chip.id = 'ignore-' + f.replace(/[^a-zA-Z0-9]/g, '_');
+    chip.textContent = f;
+    container.appendChild(chip);
+  });
+  updateIgnoreDisplay();
+}
+
+function matchesPattern(filename, pattern) {
+  if (pattern.endsWith('/')) {
+    return filename === pattern || filename.startsWith(pattern);
+  }
+  if (pattern.startsWith('*.')) {
+    const ext = pattern.substring(1);
+    return filename.endsWith(ext);
+  }
+  if (pattern.includes('*')) {
+    const re = new RegExp('^' + pattern.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+    return re.test(filename);
+  }
+  return filename === pattern;
+}
+
+function updateIgnoreDisplay() {
+  ignoreAllFiles.forEach(f => {
+    const chip = document.getElementById('ignore-' + f.replace(/[^a-zA-Z0-9]/g, '_'));
+    if (!chip) return;
+    const isIgnored = ignorePatterns.some(p => matchesPattern(f, p));
+    chip.className = 'file-chip' + (isIgnored ? ' ignored' : (shouldIgnore.has(f) ? '' : ' tracked'));
+  });
+  document.getElementById('ignorePatternList').textContent = ignorePatterns.length ? ignorePatterns.join(', ') : 'none';
+
+  // Check if all targets ignored and no source code ignored
+  const fb = document.getElementById('ignoreFeedback');
+  const allTargetsIgnored = [...shouldIgnore].every(f => ignorePatterns.some(p => matchesPattern(f, p)));
+  const sourceIgnored = ['app.js', 'index.html', 'style.css', 'package.json', 'src/login.py', '.gitignore'].some(f => ignorePatterns.some(p => matchesPattern(f, p)));
+
+  if (allTargetsIgnored && !sourceIgnored) {
+    fb.innerHTML = '<span style="color:var(--green);">Perfect!</span> All junk files ignored, all source code tracked. Your .gitignore is clean.';
+    addScore(2);
+  } else if (sourceIgnored) {
+    fb.innerHTML = '<span style="color:var(--red);">Careful!</span> You are ignoring source code files. Refine your patterns.';
+  } else if (ignorePatterns.length > 0) {
+    const remaining = [...shouldIgnore].filter(f => !ignorePatterns.some(p => matchesPattern(f, p)));
+    fb.innerHTML = '<span style="color:var(--ember);">Getting there!</span> Still need to ignore: ' + remaining.join(', ');
+  }
+}
+
+document.getElementById('ignoreInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const pattern = this.value.trim();
+    if (!pattern || pattern.startsWith('#')) { this.value = ''; return; }
+    ignorePatterns.push(pattern);
+    this.value = '';
+    updateIgnoreDisplay();
+    addScore();
+  }
+});
+
+// === Slide 13: PR Flow ===
+let prState = -1;
+
+function prStep(step) {
+  if (step > prState + 1) return;
+  if (step <= prState) {
+    const d = document.getElementById('pr-detail-' + step);
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  prState = step;
+  document.getElementById('pr-num-' + step).classList.add('active');
+  document.getElementById('pr-detail-' + step).style.display = 'block';
+  if (step > 0) {
+    document.getElementById('pr-num-' + (step - 1)).classList.remove('active');
+    document.getElementById('pr-num-' + (step - 1)).classList.add('done');
+  }
+  addScore();
+}
+
+// === Slide 14: Git Bisect ===
+const BISECT_BUG = 5; // Commit 5 introduced the bug (0-indexed: index 4)
+let bisectLow = 0, bisectHigh = 7, bisectCurrent = -1, bisectDone = false, bisectStepCount = 0;
+
+function buildBisect() {
+  const container = document.getElementById('bisectCommits');
+  container.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const div = document.createElement('div');
+    div.className = 'bisect-commit';
+    div.id = 'bisect-' + i;
+    div.innerHTML = '<div style="font-weight:700;">#' + (i + 1) + '</div><div style="font-size:10px;color:var(--text-dim);">' + ['Setup', 'Auth', 'DB', 'API', 'Cache', 'Search', 'UI', 'Deploy'][i] + '</div>';
+    div.onclick = () => bisectSelect(i);
+    container.appendChild(div);
+  }
+  // Mark initial known states
+  document.getElementById('bisect-0').classList.add('good');
+  document.getElementById('bisect-7').classList.add('bad');
+  bisectLow = 0;
+  bisectHigh = 7;
+  bisectNext();
+}
+
+function bisectNext() {
+  if (bisectLow + 1 >= bisectHigh) {
+    bisectDone = true;
+    document.getElementById('bisect-' + bisectHigh).classList.add('found');
+    document.getElementById('bisectFeedback').innerHTML = '<span style="color:var(--green);">Found it!</span> Commit #' + (bisectHigh + 1) + ' introduced the bug. Found in <strong>' + bisectStepCount + ' steps</strong> instead of checking all 8 &mdash; that is the power of splitting in half each time!';
+    document.getElementById('bisectGood').disabled = true;
+    document.getElementById('bisectBad').disabled = true;
+    addScore(3);
+    return;
+  }
+  bisectCurrent = Math.floor((bisectLow + bisectHigh) / 2);
+  document.querySelectorAll('.bisect-commit.current').forEach(c => c.classList.remove('current'));
+  document.getElementById('bisect-' + bisectCurrent).classList.add('current');
+  document.getElementById('bisectGood').disabled = false;
+  document.getElementById('bisectBad').disabled = false;
+  document.getElementById('bisectFeedback').innerHTML = 'Testing commit <strong>#' + (bisectCurrent + 1) + '</strong>. Is it good or bad?';
+  document.getElementById('bisectSteps').textContent = 'Steps taken: ' + bisectStepCount + ' | Range: #' + (bisectLow + 1) + ' to #' + (bisectHigh + 1);
+}
+
+function bisectSelect(i) {
+  if (bisectDone || bisectCurrent === -1) return;
+}
+
+function bisectMark(verdict) {
+  if (bisectDone || bisectCurrent === -1) return;
+  bisectStepCount++;
+  const isBuggy = (bisectCurrent + 1) >= BISECT_BUG;
+  if (verdict === 'good') {
+    if (isBuggy) {
+      document.getElementById('bisectFeedback').innerHTML = '<span style="color:var(--red);">Hmm, this commit actually has the bug!</span> Tests are failing. Try marking it as bad.';
+      bisectStepCount--;
+      return;
+    }
+    document.getElementById('bisect-' + bisectCurrent).classList.add('good');
+    bisectLow = bisectCurrent;
+  } else {
+    if (!isBuggy) {
+      document.getElementById('bisectFeedback').innerHTML = '<span style="color:var(--red);">This commit is actually fine!</span> Tests pass. Try marking it as good.';
+      bisectStepCount--;
+      return;
+    }
+    document.getElementById('bisect-' + bisectCurrent).classList.add('bad');
+    bisectHigh = bisectCurrent;
+  }
+  bisectNext();
+}
+
+function bisectReset() {
+  bisectLow = 0; bisectHigh = 7; bisectCurrent = -1; bisectDone = false; bisectStepCount = 0;
+  buildBisect();
+  document.getElementById('bisectFeedback').innerHTML = '';
+  document.getElementById('bisectSteps').textContent = '';
+}
+
+// === Slide 15: Pipeline ===
+let pipeRevealed = new Set();
+
+function pipeStage(i) {
+  const el = document.getElementById('pipe-' + i);
+  if (pipeRevealed.has(i)) {
+    el.classList.toggle('active');
+    return;
+  }
+  pipeRevealed.add(i);
+  el.classList.add('active');
+  addScore();
+}
+
+// === Slide 16: Speed Round ===
+const speedQuestions = [
+  { q: 'Move a file to the staging area?', opts: ['git add', 'git push', 'git stage', 'git move'], correct: 0 },
+  { q: 'Create a new branch?', opts: ['git new branch', 'git branch <name>', 'git create branch', 'git fork'], correct: 1 },
+  { q: 'See commit history?', opts: ['git history', 'git show', 'git log', 'git commits'], correct: 2 },
+  { q: 'Undo a commit safely on shared branch?', opts: ['git reset', 'git undo', 'git delete', 'git revert'], correct: 3 },
+  { q: 'Save uncommitted work temporarily?', opts: ['git save', 'git stash', 'git hold', 'git park'], correct: 1 },
+  { q: 'Download remote changes without merging?', opts: ['git pull', 'git clone', 'git fetch', 'git download'], correct: 2 },
+  { q: 'What is HEAD?', opts: ['The latest commit', 'Pointer to current branch', 'The main branch', 'The remote'], correct: 1 },
+  { q: 'Find which commit introduced a bug?', opts: ['git blame', 'git find', 'git bisect', 'git search'], correct: 2 },
+  { q: 'A branch is physically a...', opts: ['Folder copy', 'Compressed archive', 'Text file with hash', 'Database entry'], correct: 2 },
+  { q: 'Combine two branches?', opts: ['git combine', 'git merge', 'git join', 'git connect'], correct: 1 },
+];
+let speedIdx = -1, speedCorrect = 0, speedTimerId = null, speedTime = 0;
+
+function startSpeed() {
+  document.getElementById('speedStartBtn').style.display = 'none';
+  document.getElementById('speedFinal').style.display = 'none';
+  speedIdx = -1; speedCorrect = 0;
+  nextSpeedQ();
+}
+
+function nextSpeedQ() {
+  speedIdx++;
+  if (speedIdx >= speedQuestions.length) {
+    endSpeed();
+    return;
+  }
+  const q = speedQuestions[speedIdx];
+  document.getElementById('speedQNum').textContent = speedIdx + 1;
+  document.getElementById('speedQuestion').textContent = q.q;
+  const opts = document.getElementById('speedOptions');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'speed-opt';
+    btn.textContent = o;
+    btn.onclick = () => answerSpeed(i);
+    opts.appendChild(btn);
+  });
+  speedTime = 8.0;
+  updateSpeedTimer();
+  speedTimerId = setInterval(() => {
+    speedTime -= 0.1;
+    if (speedTime <= 0) {
+      clearInterval(speedTimerId);
+      speedTime = 0;
+      answerSpeed(-1); // timeout
+    }
+    updateSpeedTimer();
+  }, 100);
+}
+
+function updateSpeedTimer() {
+  const el = document.getElementById('speedTimer');
+  el.textContent = Math.max(0, speedTime).toFixed(1);
+  el.className = 'speed-timer' + (speedTime <= 2 ? ' urgent' : '');
+}
+
+function answerSpeed(choice) {
+  clearInterval(speedTimerId);
+  const q = speedQuestions[speedIdx];
+  const opts = document.getElementById('speedOptions').children;
+  for (let i = 0; i < opts.length; i++) {
+    opts[i].disabled = true;
+    if (i === q.correct) opts[i].classList.add('correct');
+    if (i === choice && choice !== q.correct) opts[i].classList.add('wrong');
+  }
+  if (choice === q.correct) {
+    speedCorrect++;
+    addScore();
+  }
+  document.getElementById('speedScore').textContent = 'Score: ' + speedCorrect;
+  setTimeout(nextSpeedQ, 800);
+}
+
+function endSpeed() {
+  document.getElementById('speedQuestion').textContent = '';
+  document.getElementById('speedOptions').innerHTML = '';
+  document.getElementById('speedTimer').textContent = '';
+  document.getElementById('speedProgress').textContent = '';
+  const final = document.getElementById('speedFinal');
+  final.style.display = 'block';
+  document.getElementById('speedFinalScore').textContent = speedCorrect + ' / ' + speedQuestions.length;
+  const pct = Math.round(speedCorrect / speedQuestions.length * 100);
+  if (pct === 100) document.getElementById('speedFinalMsg').textContent = 'Flawless. You know git inside and out.';
+  else if (pct >= 70) document.getElementById('speedFinalMsg').textContent = 'Solid! Review the ones you missed.';
+  else document.getElementById('speedFinalMsg').textContent = 'Worth revisiting some sections. The concepts build on each other.';
+  document.getElementById('speedStartBtn').style.display = 'inline-block';
+  document.getElementById('speedStartBtn').textContent = 'Try Again';
+}
+
+// === Slide 17: Final Quiz ===
+let fqAnswered = 0, fqCorrect = 0;
+const fqFeedback = {
+  'fq-1': { y: 'Exactly. Git stores a complete snapshot of all your files with each commit &mdash; not just the changes.', n: 'Git stores a complete snapshot of all files with each commit. The "diff" (what changed) is calculated on the fly when you need it, but it\'s not how data is stored.' },
+  'fq-2': { y: 'Yes! A branch is just a tiny text file containing one commit ID. That\'s why creating a branch is instant.', n: 'A branch is just a tiny text file that stores the ID of one commit &mdash; the latest commit on that branch.' },
+  'fq-3': { y: 'Right. Reset erases the commit from history (moves the branch back). Revert keeps the history intact and adds a new commit that undoes the changes.', n: 'Reset erases the commit from your branch\'s history. Revert is safer &mdash; it creates a new commit that undoes the changes, keeping the original history intact.' },
+  'fq-4': { y: 'The reflog (git\'s safety log) records every action. Even after reset --hard, you can find the lost commit ID in the reflog and restore it.', n: 'Git reflog is the answer. It\'s a safety log that records every action, letting you find and recover "lost" commits.' },
+  'fq-5': { y: 'Stash saves your work-in-progress to a hidden shelf and cleans your folder so you can safely switch branches.', n: 'Git stash saves your uncommitted changes to a hidden shelf, giving you a clean folder so you can switch branches safely.' },
+  'fq-6': { y: 'When someone else has pushed new commits to GitHub, you need to download them first (pull), then push your own.', n: 'Push fails when GitHub has commits you don\'t have yet. Download them first with git pull, then push.' },
+};
+
+function fqCheck(id, btn, correct) {
+  const quiz = document.getElementById(id);
+  const fb = document.getElementById(id + '-fb');
+  quiz.querySelectorAll('.quiz-opt').forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  if (!correct) {
+    quiz.querySelectorAll('.quiz-opt').forEach(o => {
+      if (o.onclick.toString().includes('true')) o.classList.add('correct');
+    });
+  }
+  fb.textContent = correct ? fqFeedback[id].y : fqFeedback[id].n;
+  fb.className = 'quiz-fb show ' + (correct ? 'correct' : 'wrong');
+  fqAnswered++;
+  if (correct) fqCorrect++;
+  addScore();
+  if (fqAnswered === 6) {
+    const r = document.getElementById('fqResult');
+    r.style.display = 'block';
+    const pct = Math.round(fqCorrect / 6 * 100);
+    document.getElementById('fqScore').textContent = fqCorrect + ' / 6 (' + pct + '%)';
+    if (fqCorrect === 6) document.getElementById('fqMsg').textContent = 'Flawless. You understand git deeply.';
+    else if (fqCorrect >= 4) document.getElementById('fqMsg').textContent = 'Solid understanding. Review the ones you missed.';
+    else document.getElementById('fqMsg').textContent = 'Worth going through some sections again.';
+  }
+}
+
+// === Init ===
+buildNav();
+buildFilmStrip();
+buildIgnoreFiles();
+buildBisect();
+goTo(0);
+</script>
+</body>
+</html>
